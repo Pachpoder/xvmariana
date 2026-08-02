@@ -1,0 +1,76 @@
+RESUMEN DEL PROYECTO — XV MARIANA
+Actualizado: 2026-08-02
+
+1. APLICACIÓN
+
+- Se creó una aplicación única con Next.js App Router, TypeScript estricto, Tailwind CSS y npm.
+- Se usa Node.js 24 LTS, React integrado en Next.js y alias @/*.
+- Se instalaron Motion, Supabase SSR/JS, React Hook Form, Zod, Lucide, Sonner, clsx y tailwind-merge.
+- Se añadieron scripts para lint, typecheck, tests, E2E y build.
+
+2. ADMINISTRACIÓN
+
+- Existe login administrativo en /admin/login con email y contraseña.
+- Las rutas /admin están protegidas por proxy de Supabase y verificación server-side con getClaims() y profiles.role = admin.
+- Se implementó dashboard con métricas de invitaciones, RSVP, asistentes, extras y última respuesta.
+- Se implementó CRUD de invitaciones: listado, búsqueda, filtro RSVP, paginación, crear, editar, archivar, restaurar y copiar enlace.
+- Los formularios manejan nombres dinámicos, invitado principal, extras permitidos, notas internas y slugs.
+- /admin/configuracion dejó de ser un placeholder: ahora permite editar nombre, slug, fechas, rutas de imágenes, duración de loading y publicación del evento.
+
+3. INVITACIONES PÚBLICAS Y RSVP
+
+- La ruta /[slug] consulta en servidor y entrega únicamente un DTO público sanitizado.
+- La experiencia tiene loading, sobre accesible, apertura animada con Motion y tarjeta de invitación.
+- Respeta prefers-reduced-motion, incluye fallback para imágenes y metadatos genéricos no indexables.
+- El RSVP permite asistir, declinar, indicar personas nombradas, extras y mensaje opcional.
+- El RSVP usa honeypot, validación Zod en cliente/servidor y upsert por invitation_id.
+- Los límites se validan nuevamente contra PostgreSQL; una declinación guarda ambos conteos en cero.
+
+4. BASE DE DATOS SUPABASE
+
+- Se inicializó supabase/config.toml para ejecución local.
+- Se conservan migraciones incrementales en supabase/migrations/:
+  - 20260802000000_initial_schema.sql
+  - 20260802001000_invitation_mutations.sql
+  - 20260802002000_invitation_integrity.sql
+  - 20260802003000_rsvp_submission_rules.sql
+  - 20260802004000_schema_alignment.sql
+- Se crean profiles, events, invitations, invitation_guests y rsvps, con enums, UUID, constraints, índices, updated_at y triggers RSVP.
+- RLS está habilitado en todas las tablas. No existe acceso directo para anon; los administradores autenticados tienen políticas administrativas.
+- Las validaciones PostgreSQL cubren límites de RSVP, invitaciones inactivas/archivadas y deadlines.
+- Se añadió el seed idempotente del evento “XV Años de Mariana”, sin inventar created_by.
+
+5. EJECUCIÓN Y ESTADO REMOTO
+
+- Se verificó el proyecto Supabase remoto y se aplicaron correctamente las cinco migraciones.
+- Se verificó que las cinco tablas y el seed existan en remoto.
+- Se creó/configuró una cuenta administrativa de demostración (sus credenciales no se guardan en este archivo).
+- Se ejecutó el seed remoto del evento inicial.
+- El evento xv-mariana fue publicado con autorización explícita.
+- La invitación andres-ovando-ug8gxm fue verificada como activa, no archivada y disponible públicamente.
+
+6. PRUEBAS Y CALIDAD
+
+- npm run lint: aprobado.
+- npm run typecheck: aprobado.
+- npm run test: 15 pruebas aprobadas.
+- npm run build: aprobado.
+- Se añadió Playwright y una suite E2E para login, CRUD, archivo, invitación pública, RSVP, límites, enlace inválido e invitación inactiva.
+- Los E2E con datos se ejecutan solo si se proveen variables E2E_* contra un proyecto de prueba aislado.
+- La revisión visual automatizada de login pasó en 320, 375, 390, 430, 768 y 1440 px, incluyendo foco visible y ausencia de overflow horizontal.
+
+7. DOCUMENTACIÓN
+
+- AGENTS.md: reglas permanentes del proyecto.
+- README.md: instalación, Supabase, migraciones, administrador, pruebas, Vercel, dominio y checklist.
+- docs/PLAN.md: milestones y mantenimiento de migraciones.
+- docs/ARCHITECTURE.md: estructura, seguridad, clientes Supabase y migraciones.
+- docs/PRODUCTION-READINESS.md: revisión de producción, E2E, accesibilidad y auditoría.
+
+8. SEGURIDAD Y PENDIENTES OPERATIVOS
+
+- Ninguna clave, contraseña o token se guarda en este archivo.
+- SUPABASE_SERVICE_ROLE_KEY solo se utiliza desde código server-only.
+- .env.local y artefactos temporales de Supabase/Playwright están ignorados por Git.
+- npm audit reportó vulnerabilidades transitivas de PostCSS/sharp vía Next.js. No se aplicó el downgrade incompatible sugerido por npm; se debe vigilar una actualización compatible de Next.js.
+- Antes de enviar invitaciones reales: actualizar la fecha definitiva del evento, reemplazar imágenes placeholder, revisar RSVP, probar en WhatsApp y rotar secretos que hayan sido compartidos fuera de un gestor seguro.
