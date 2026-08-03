@@ -1,14 +1,12 @@
 'use client';
-/* eslint-disable @next/next/no-img-element -- dynamic Supabase Storage paths need a direct error fallback */
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { Heart, ImageOff, UsersRound } from 'lucide-react';
+import { Heart, UsersRound } from 'lucide-react';
+import { PublicLandingPage } from '@/components/landing/event-landing';
 import { nextInvitationStage, type InvitationStage } from '@/lib/invitation-experience';
 import type { PublicInvitationDto } from '@/lib/queries/public-invitation';
 import { RsvpForm } from './rsvp-form';
-
-const fallbackImage = '/assets/invitation-placeholder.svg';
 
 export function PublicInvitationExperience({
   invitation,
@@ -18,14 +16,9 @@ export function PublicInvitationExperience({
   slug: string;
 }) {
   const [stage, setStage] = useState<InvitationStage>('loading');
-  const [imageFailed, setImageFailed] = useState(false);
   const reducedMotion = useReducedMotion();
-  const invitationImage = imageFailed ? fallbackImage : invitation.invitationImagePath;
 
   useEffect(() => {
-    const preloadedImage = new Image();
-    preloadedImage.src = invitation.invitationImagePath;
-    preloadedImage.onerror = () => setImageFailed(true);
     const duration = Math.max(0, invitation.loadingDurationMs || 3000);
     const timer = window.setTimeout(() => setStage('envelope'), duration);
     return () => window.clearTimeout(timer);
@@ -35,7 +28,7 @@ export function PublicInvitationExperience({
     ? { duration: 0 }
     : { duration: 0.7, ease: 'easeInOut' as const };
   return (
-    <main className='min-h-svh overflow-hidden bg-[#481c28] px-4 py-6 text-[#39241e] sm:px-8'>
+    <main className={stage === 'invitation' ? 'min-h-svh' : 'min-h-svh overflow-hidden bg-[#481c28] px-4 py-6 text-[#39241e] sm:px-8'}>
       <AnimatePresence mode='wait'>
         {stage === 'loading' && (
           <motion.section
@@ -116,13 +109,10 @@ export function PublicInvitationExperience({
           </motion.section>
         )}
         {stage === 'invitation' && (
-          <InvitationCard
+          <PersonalizedLanding
             invitation={invitation}
             slug={slug}
-            image={invitationImage}
-            imageFailed={imageFailed}
             transition={transition}
-            onImageError={() => setImageFailed(true)}
           />
         )}
       </AnimatePresence>
@@ -130,20 +120,14 @@ export function PublicInvitationExperience({
   );
 }
 
-function InvitationCard({
+function PersonalizedLanding({
   invitation,
   slug,
-  image,
-  imageFailed,
   transition,
-  onImageError,
 }: {
   invitation: PublicInvitationDto;
   slug: string;
-  image: string;
-  imageFailed: boolean;
   transition: { duration: number; ease?: 'easeInOut' };
-  onImageError: () => void;
 }) {
   return (
     <motion.section
@@ -151,48 +135,16 @@ function InvitationCard({
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={transition}
-      className='mx-auto w-full max-w-md pb-8'
+      className='w-full'
     >
-      <article className='overflow-hidden rounded-[2rem] bg-cream shadow-2xl'>
-        <div className='relative aspect-[3/4] bg-rose/20'>
-          {imageFailed ? (
-            <div className='grid h-full place-items-center text-center text-wine'>
-              <ImageOff className='mx-auto' />
-              <p className='mt-3 text-sm'>La imagen de la invitación no está disponible.</p>
-            </div>
-          ) : (
-            <img
-              src={image}
-              alt='Invitación de evento'
-              className='h-full w-full object-cover'
-              onError={onImageError}
-            />
-          )}
-        </div>
-        <div className='px-7 py-8 text-center'>
-          <p className='text-xs font-semibold tracking-[0.25em] text-gold'>
-            {invitation.eventName.toLocaleUpperCase('es-GT')}
-          </p>
-          <h1 className='mt-4 font-serif text-3xl text-wine'>Con mucho cariño</h1>
-          <p className='mt-5 text-sm leading-7 text-stone-600'>Tenemos el gusto de invitar a</p>
-          <div className='mt-3 space-y-1'>
-            <p className='font-serif text-2xl leading-8 text-wine'>
-              {invitation.guestNames.map((name) => (
-                <span key={name} className='block'>
-                  {name}
-                </span>
-              ))}
-            </p>
-          </div>
-          <div className='mt-7 flex items-center justify-center gap-2 text-sm text-stone-600'>
-            <UsersRound size={18} className='text-gold' />
-            {invitation.maxExtraGuests === 0
-              ? 'Invitación personal'
-              : `${invitation.maxExtraGuests} acompañante${invitation.maxExtraGuests === 1 ? '' : 's'} adicional${invitation.maxExtraGuests === 1 ? '' : 'es'} permitido${invitation.maxExtraGuests === 1 ? '' : 's'}`}
-          </div>
-          <RsvpForm slug={slug} invitation={invitation} />
-        </div>
-      </article>
+      <PublicLandingPage
+        personalizedContent={<PersonalizedInvitationDetails invitation={invitation} />}
+        rsvpContent={<RsvpForm slug={slug} invitation={invitation} compact />}
+      />
     </motion.section>
   );
+}
+
+function PersonalizedInvitationDetails({ invitation }: { invitation: PublicInvitationDto }) {
+  return <section className='border-y border-[#e2d4c0] bg-[#fffdf8] px-6 py-9 text-center text-[#8c713c] sm:px-10'><p className='font-[family-name:var(--font-lora)] text-xs font-semibold tracking-[0.22em]'>{invitation.eventName.toLocaleUpperCase('es-GT')}</p><h1 className='mt-4 font-[family-name:var(--font-luxurious-script)] text-4xl leading-none text-[#c65382]'>Esta invitación es para</h1><div className='mt-5 space-y-1 font-[family-name:var(--font-luxurious-script)] text-3xl leading-tight text-[#c65382]'>{invitation.guestNames.map((name) => <p key={name}>{name}</p>)}</div><p className='mx-auto mt-6 flex max-w-xs items-center justify-center gap-2 font-[family-name:var(--font-lora)] text-sm leading-6 text-[#8c713c]'><UsersRound size={18} className='shrink-0 text-[#d96f9d]' />{invitation.maxExtraGuests === 0 ? 'Invitación personal' : `${invitation.maxExtraGuests} acompañante${invitation.maxExtraGuests === 1 ? '' : 's'} adicional${invitation.maxExtraGuests === 1 ? '' : 'es'} permitido${invitation.maxExtraGuests === 1 ? '' : 's'}`}</p></section>;
 }

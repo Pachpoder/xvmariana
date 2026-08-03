@@ -71,7 +71,7 @@ export function RsvpResponseForm({
       <h2
         className={
           compact
-            ? 'font-serif text-2xl text-[#59664d]'
+            ? 'font-[family-name:var(--font-luxurious-script)] text-4xl leading-none text-[#c65382]'
             : 'text-center text-sm font-semibold text-wine'
         }
       >
@@ -95,13 +95,13 @@ export function RsvpResponseForm({
         <input type='hidden' {...register('slug')} />
         <div className='grid grid-cols-2 gap-2'>
           <label
-            className={`cursor-pointer rounded-xl border p-3 text-center text-sm ${response === 'attending' ? 'border-wine bg-rose/10 text-wine' : 'border-stone-200'}`}
+            className={`cursor-pointer rounded-xl border p-3 text-center text-sm transition-colors ${response === 'attending' ? 'border-[#c65382] bg-[#fbedf2] font-semibold text-[#9e3e66] shadow-sm' : compact ? 'border-[#dfcdbd] bg-[#fffdf8]/85 text-[#8c713c] hover:bg-[#fff7f5]' : 'border-stone-200'}`}
           >
             <input {...register('response')} value='attending' type='radio' className='sr-only' />
             Sí asistiré
           </label>
           <label
-            className={`cursor-pointer rounded-xl border p-3 text-center text-sm ${response === 'not_attending' ? 'border-wine bg-rose/10 text-wine' : 'border-stone-200'}`}
+            className={`cursor-pointer rounded-xl border p-3 text-center text-sm transition-colors ${response === 'not_attending' ? 'border-[#c65382] bg-[#fbedf2] font-semibold text-[#9e3e66] shadow-sm' : compact ? 'border-[#dfcdbd] bg-[#fffdf8]/85 text-[#8c713c] hover:bg-[#fff7f5]' : 'border-stone-200'}`}
           >
             <input
               {...register('response')}
@@ -114,7 +114,7 @@ export function RsvpResponseForm({
         </div>
         {response === 'attending' && needsCounts ? (
           <div className='grid grid-cols-2 gap-3'>
-            <label className='text-xs font-medium'>
+            <label className={`text-xs font-medium ${compact ? 'text-[#8c713c]' : ''}`}>
               Personas nombradas
               <input
                 {...register('namedGuestsAttending', { valueAsNumber: true })}
@@ -122,7 +122,7 @@ export function RsvpResponseForm({
                 min='0'
                 max={invitation.namedGuestLimit}
                 aria-invalid={Boolean(errors.namedGuestsAttending)}
-                className='mt-1 min-h-11 w-full rounded-lg border border-stone-200 px-3 py-2 text-sm'
+                className={`mt-1 min-h-11 w-full rounded-lg border px-3 py-2 text-sm ${compact ? 'border-[#dfcdbd] bg-[#fffdf8]/85 text-[#5e4930]' : 'border-stone-200'}`}
               />
               {errors.namedGuestsAttending && (
                 <span className='mt-1 block text-red-700'>
@@ -131,7 +131,7 @@ export function RsvpResponseForm({
               )}
             </label>
             {invitation.maxExtraGuests > 0 && (
-              <label className='text-xs font-medium'>
+              <label className={`text-xs font-medium ${compact ? 'text-[#8c713c]' : ''}`}>
                 Acompañantes extras
                 <input
                   {...register('extraGuestsAttending', { valueAsNumber: true })}
@@ -139,7 +139,7 @@ export function RsvpResponseForm({
                   min='0'
                   max={invitation.maxExtraGuests}
                   aria-invalid={Boolean(errors.extraGuestsAttending)}
-                  className='mt-1 min-h-11 w-full rounded-lg border border-stone-200 px-3 py-2 text-sm'
+                  className={`mt-1 min-h-11 w-full rounded-lg border px-3 py-2 text-sm ${compact ? 'border-[#dfcdbd] bg-[#fffdf8]/85 text-[#5e4930]' : 'border-stone-200'}`}
                 />
                 {errors.extraGuestsAttending && (
                   <span className='mt-1 block text-red-700'>
@@ -160,13 +160,13 @@ export function RsvpResponseForm({
             <input type='hidden' name='extraGuestsAttending' value='0' />
           </>
         )}
-        <label className='block text-xs font-medium'>
+          <label className={`block text-xs font-medium ${compact ? 'text-[#8c713c]' : ''}`}>
           Mensaje opcional
           <textarea
             {...register('message')}
             maxLength={500}
             aria-invalid={Boolean(errors.message)}
-            className='mt-1 min-h-20 w-full rounded-lg border border-stone-200 px-3 py-2 text-sm'
+            className={`mt-1 min-h-20 w-full rounded-lg border px-3 py-2 text-sm ${compact ? 'border-[#dfcdbd] bg-[#fffdf8]/85 text-[#5e4930] placeholder:text-[#b8a58e]' : 'border-stone-200'}`}
           />
         </label>
         <label
@@ -183,7 +183,7 @@ export function RsvpResponseForm({
         )}
         <button
           disabled={pending}
-          className='min-h-11 w-full rounded-xl bg-wine px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60'
+          className={compact ? 'min-h-11 w-full rounded-xl bg-[#947134] px-4 py-2.5 text-sm font-semibold text-[#fffaf0] shadow-[0_8px_18px_rgba(148,113,52,0.2)] transition-colors hover:bg-[#795a29] disabled:opacity-60' : 'min-h-11 w-full rounded-xl bg-wine px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60'}
         >
           {pending
             ? 'Guardando…'

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { PublicLandingUnderDevelopment } from '@/components/landing/event-landing';
+import { PublicLandingPage } from '@/components/landing/event-landing';
 
 export const metadata: Metadata = {
   title: 'XV Mariana',
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <PublicLandingUnderDevelopment />;
+  return <PublicLandingPage />;
 }
