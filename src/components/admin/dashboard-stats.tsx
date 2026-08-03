@@ -1,8 +1,44 @@
-import { CalendarClock, CheckCircle2, Clock3, UsersRound, XCircle } from "lucide-react";
-import type { DashboardStats } from "@/lib/queries/dashboard";
+import { CalendarClock, CheckCircle2, Clock3, UsersRound, XCircle } from 'lucide-react';
+import type { DashboardStats } from '@/lib/queries/dashboard';
 
-const formatter = new Intl.DateTimeFormat("es-GT", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Guatemala" });
+const formatter = new Intl.DateTimeFormat('es-GT', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: 'America/Guatemala',
+});
 export function DashboardStats({ stats }: { stats: DashboardStats }) {
-  const cards = [{ label: "Invitaciones totales", value: stats.invitationsTotal, icon: UsersRound }, { label: "Pendientes", value: stats.pending, icon: Clock3 }, { label: "Asistirán", value: stats.attending, icon: CheckCircle2 }, { label: "No asistirán", value: stats.notAttending, icon: XCircle }, { label: "Nombres invitados", value: stats.namedGuestsInvited, icon: UsersRound }, { label: "Nombres confirmados", value: stats.namedGuestsConfirmed, icon: CheckCircle2 }, { label: "Extras confirmados", value: stats.extraGuestsConfirmed, icon: UsersRound }, { label: "Asistentes estimados", value: stats.estimatedAttendees, icon: UsersRound }];
-  return <><div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{cards.map(({ label, value, icon: Icon }) => <article key={label} className="rounded-2xl border border-rose/20 bg-white p-5"><Icon size={20} className="text-gold" /><p className="mt-6 text-sm text-stone-500">{label}</p><p className="mt-1 text-2xl font-semibold text-wine">{value}</p></article>)}</div><div className="mt-6 flex items-center gap-3 rounded-2xl border border-rose/20 bg-white p-5 text-sm text-stone-600"><CalendarClock className="text-gold" size={20} /><span>Última respuesta: <strong>{stats.lastResponseAt ? formatter.format(new Date(stats.lastResponseAt)) : "Aún no hay respuestas"}</strong></span></div></>;
+  const cards = [
+    { label: 'Invitaciones totales', value: stats.invitationsTotal, icon: UsersRound },
+    { label: 'Pendientes', value: stats.pending, icon: Clock3 },
+    { label: 'Asistirán', value: stats.attending, icon: CheckCircle2 },
+    { label: 'No asistirán', value: stats.notAttending, icon: XCircle },
+    { label: 'Nombres invitados', value: stats.namedGuestsInvited, icon: UsersRound },
+    { label: 'Nombres confirmados', value: stats.namedGuestsConfirmed, icon: CheckCircle2 },
+    { label: 'Extras confirmados', value: stats.extraGuestsConfirmed, icon: UsersRound },
+    { label: 'Asistentes estimados', value: stats.estimatedAttendees, icon: UsersRound },
+  ];
+  return (
+    <>
+      <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-4'>
+        {cards.map(({ label, value, icon: Icon }) => (
+          <article key={label} className='rounded-2xl border border-rose/20 bg-white p-5'>
+            <Icon size={20} className='text-gold' />
+            <p className='mt-6 text-sm text-stone-500'>{label}</p>
+            <p className='mt-1 text-2xl font-semibold text-wine'>{value}</p>
+          </article>
+        ))}
+      </div>
+      <div className='mt-6 flex items-center gap-3 rounded-2xl border border-rose/20 bg-white p-5 text-sm text-stone-600'>
+        <CalendarClock className='text-gold' size={20} />
+        <span>
+          Última respuesta:{' '}
+          <strong>
+            {stats.lastResponseAt
+              ? formatter.format(new Date(stats.lastResponseAt))
+              : 'Aún no hay respuestas'}
+          </strong>
+        </span>
+      </div>
+    </>
+  );
 }

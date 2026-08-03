@@ -23,14 +23,22 @@
 
 Todos los milestones planificados están completados. Las siguientes tareas deben definirse explícitamente como mantenimiento, corrección o una nueva fase.
 
+## Mantenimiento — configuración administrativa y landing fija
+
+- Simplificada la pantalla `/admin/configuracion`: conserva solamente los datos operativos del evento y las invitaciones personales.
+- La landing de `/` ya no consulta ni modifica contenido editorial desde Supabase o el administrador. Sus textos, imágenes, lugares, agenda y secciones se editan directamente en `src/lib/landing-content.ts`.
+- Las respuestas enviadas desde el formulario de la landing continúan guardándose en `landing_rsvp_submissions` y se consultan desde el panel administrativo.
+- Añadido un generador y descarga PNG del QR fijo de la landing en `/admin/configuracion`. Usa la URL explícita `NEXT_PUBLIC_APP_URL`, para evitar QR ligados a previews, y `qrcode` como dependencia de producción para generarlo localmente sin un servicio externo.
+
 ## Landing pública principal
 
 - La landing pública en `/` evoluciona como una fase posterior a los milestones, sin sustituir la ruta de invitación personalizada `/[slug]`.
 - Presenta una experiencia vertical, responsive y centrada con banner, corona, nombre, imagen, descripción, detalles, música y CTA de confirmación preparado para la próxima integración.
-- Añadida una migración incremental de configuración editorial de la landing. Los campos se administran en `/admin/configuracion` y la consulta pública solo entrega un DTO sanitizado del evento publicado y con landing habilitada.
+- La landing quedó como composición fija de componentes de React. Su contenido se define en código y no depende de la configuración editorial almacenada en el evento.
 - Las rutas `/[slug]`, administrativas, métricas, CRUD y lógica RSVP existente no se modificaron. La landing respeta foco visible, navegación por teclado, fallback de imágenes y bloqueo de autoplay del navegador.
 - El CTA de la landing usa un formulario independiente de las invitaciones personales. Guarda nombre, apellido y respuesta en `landing_rsvp_submissions`, una tabla con RLS y políticas administrativas propias; las confirmaciones por `/[slug]` y sus RSVP no cambian.
 - Pulida la landing y el modal RSVP: márgenes móviles consistentes, tipografía fluida para el nombre, controles de al menos 44 px, diálogo nativo con foco retenido y Escape, y una regla global de movimiento reducido. La prueba E2E de landing cubre 320, 375, 390, 430, 768, 1024 y 1440 px, además de apertura y cierre por teclado del RSVP; acepta un puerto y comando de servidor alternativos para no reutilizar un proceso de desarrollo ajeno.
+- Revisión final: eliminadas referencias de UI obsoletas detectadas por ESLint; lint, TypeScript, 21 pruebas unitarias y build siguen aprobados. La landing conserva contenedor centrado, foco visible global, diálogo nativo RSVP y reducción de movimiento.
 
 ## Mantenimiento de migraciones Supabase
 

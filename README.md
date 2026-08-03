@@ -96,7 +96,7 @@ Los E2E cubren login y acceso no autorizado, crear/editar/archivar, enlace públ
 
 1. Sube el repositorio a GitHub, GitLab o Bitbucket.
 2. En Vercel selecciona **New Project**, importa el repositorio y conserva el preset Next.js.
-3. Añade las cuatro variables de producción en **Settings → Environment Variables**. Usa `https://xvmariana.com` como `NEXT_PUBLIC_APP_URL` una vez conectado el dominio.
+3. Añade las cuatro variables de producción en **Settings → Environment Variables**. Si no habrá dominio propio, usa la URL de producción estable del proyecto, por ejemplo `https://xvmariana.vercel.app`, como `NEXT_PUBLIC_APP_URL`.
 4. Despliega primero una preview y valida login, invitación pública y RSVP con datos de prueba. Fusiona a la rama de producción solo después de validar.
 5. Cada cambio de variables requiere un nuevo deployment.
 
@@ -115,7 +115,8 @@ Consulta la [guía oficial de dominios personalizados](https://vercel.com/docs/d
 
 - [ ] Todas las migraciones están aplicadas y RLS sigue activo.
 - [ ] El evento tiene fecha definitiva, `is_published = true` e imágenes finales accesibles.
-- [ ] `NEXT_PUBLIC_APP_URL` apunta a `https://xvmariana.com`.
+- [ ] `NEXT_PUBLIC_APP_URL` apunta a la URL de producción definitiva (`https://tu-proyecto.vercel.app` si no hay dominio propio), nunca a localhost ni a una preview.
+- [ ] Se generó, descargó y probó el QR de la landing desde `/admin/configuracion`; no se cambiará la URL anterior después de imprimirlo o compartirlo.
 - [ ] No hay secretos en Git, logs, variables públicas ni capturas.
 - [ ] Se probó login, creación, edición, archivado y restauración con una cuenta admin.
 - [ ] Se probó RSVP positivo, negativo, edición y límites mediante un enlace de prueba.

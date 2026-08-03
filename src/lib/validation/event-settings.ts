@@ -1,8 +1,6 @@
 import { z } from "zod";
 import { normalizeSlug } from "@/lib/slugs";
 
-const optionalText = (maximum: number) => z.string().trim().max(maximum).optional();
-
 export const eventSettingsSchema = z.object({
   id: z.string().uuid(),
   name: z.string().trim().min(1, "El nombre del evento es obligatorio.").max(120),
@@ -13,17 +11,6 @@ export const eventSettingsSchema = z.object({
   rsvpDeadline: z.string().optional(),
   loadingDurationMs: z.coerce.number().int().min(0).max(10000),
   isPublished: z.boolean(),
-  publicLandingEnabled: z.boolean(),
-  landingHeading: optionalText(160),
-  landingCelebrantName: z.string().trim().min(1, "El nombre visible es obligatorio.").max(120),
-  landingBannerImagePath: optionalText(500),
-  landingCrownImagePath: optionalText(500),
-  landingCelebrantImagePath: optionalText(500),
-  landingDescription: optionalText(1200),
-  landingDetails: optionalText(2000),
-  landingMusicUrl: optionalText(500),
-  landingMusicAutoplay: z.boolean(),
-  landingRsvpCtaText: z.string().trim().min(1, "El texto del botón es obligatorio.").max(80),
 }).superRefine((value, ctx) => {
   if (!normalizeSlug(value.slug)) ctx.addIssue({ code: "custom", path: ["slug"], message: "El slug no es válido." });
   if (value.rsvpDeadline && Number.isNaN(Date.parse(value.rsvpDeadline))) ctx.addIssue({ code: "custom", path: ["rsvpDeadline"], message: "La fecha límite no es válida." });

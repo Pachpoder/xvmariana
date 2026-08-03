@@ -1,30 +1,240 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect } from "react";
-import { ArchiveRestore, Clipboard, Pencil, Search, Trash2 } from "lucide-react";
-import { toast } from "sonner";
-import { archiveInvitation, restoreInvitation } from "@/actions/invitations";
-import type { InvitationSummary, RsvpStatus } from "@/lib/queries/invitations";
+import Link from 'next/link';
+import { useEffect } from 'react';
+import { ArchiveRestore, Clipboard, Pencil, Search, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { archiveInvitation, restoreInvitation } from '@/actions/invitations';
+import type { InvitationSummary, RsvpStatus } from '@/lib/queries/invitations';
 
-type InvitationListProps = { invitations: InvitationSummary[]; query: string; status: string; page: number; totalPages: number; notice?: string };
-const labels: Record<RsvpStatus, string> = { pending: "Pendiente", attending: "Asiste", not_attending: "No asiste" };
+type InvitationListProps = {
+  invitations: InvitationSummary[];
+  query: string;
+  status: string;
+  page: number;
+  totalPages: number;
+  notice?: string;
+};
+const labels: Record<RsvpStatus, string> = {
+  pending: 'Pendiente',
+  attending: 'Asiste',
+  not_attending: 'No asiste',
+};
 
 function invitationUrl(slug: string) {
-  const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+  const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '');
   return base ? `${base}/${slug}` : `/${slug}`;
 }
 
-export function InvitationList({ invitations, query, status, page, totalPages, notice }: InvitationListProps) {
-  useEffect(() => { if (notice) toast.success({ created: "Invitación creada.", updated: "Invitación actualizada.", archived: "Invitación archivada.", restored: "Invitación restaurada." }[notice] ?? "Cambios guardados."); }, [notice]);
-  async function copyLink(slug: string) { await navigator.clipboard.writeText(invitationUrl(slug)); toast.success("Enlace copiado al portapapeles."); }
-  const paginationHref = (nextPage: number) => `/admin/invitaciones?${new URLSearchParams({ ...(query ? { q: query } : {}), ...(status ? { status } : {}), page: String(nextPage) })}`;
-  return <>
-    <form className="mb-6 grid gap-3 rounded-2xl border border-rose/20 bg-white p-4 sm:grid-cols-[1fr_180px_auto]" method="get"><label className="relative"><Search className="absolute left-3 top-3 text-stone-400" size={18} /><input name="q" defaultValue={query} className="w-full rounded-xl border border-stone-200 py-2.5 pl-10 pr-3 text-sm" placeholder="Buscar por nombre" /></label><select name="status" defaultValue={status} className="rounded-xl border border-stone-200 px-3 py-2.5 text-sm"><option value="">Todos los estados</option><option value="pending">Pendiente</option><option value="attending">Asiste</option><option value="not_attending">No asiste</option></select><button className="rounded-xl bg-wine px-4 py-2.5 text-sm font-semibold text-white">Filtrar</button></form>
-    {!invitations.length ? <div className="rounded-3xl border border-dashed border-rose/50 bg-white p-8 text-center text-sm text-stone-500">No hay invitaciones que coincidan con los filtros.</div> : <><div className="hidden overflow-hidden rounded-2xl border border-rose/20 bg-white md:block"><table className="w-full text-left text-sm"><thead className="bg-rose/10 text-stone-600"><tr><th className="px-5 py-4">Invitados</th><th className="px-4 py-4">Estado</th><th className="px-4 py-4">Extras</th><th className="px-4 py-4">Enlace</th><th className="px-5 py-4 text-right">Acciones</th></tr></thead><tbody>{invitations.map((invitation) => <tr key={invitation.id} className="border-t border-stone-100"><td className="px-5 py-4"><p className="font-semibold">{invitation.guests.map((guest) => guest.full_name).join(", ")}</p><p className="mt-1 text-xs text-stone-500">{invitation.label}{invitation.archived_at ? " · Archivada" : ""}</p></td><td className="px-4 py-4"><StatusBadge status={invitation.status} /></td><td className="px-4 py-4">{invitation.max_extra_guests}</td><td className="px-4 py-4"><button onClick={() => void copyLink(invitation.public_slug)} className="inline-flex items-center gap-1 text-wine"><Clipboard size={15} />Copiar</button></td><td className="px-5 py-4"><Actions invitation={invitation} /></td></tr>)}</tbody></table></div><div className="space-y-3 md:hidden">{invitations.map((invitation) => <article key={invitation.id} className="rounded-2xl border border-rose/20 bg-white p-5"><div className="flex items-start justify-between gap-3"><div><h2 className="font-semibold">{invitation.guests.map((guest) => guest.full_name).join(", ")}</h2><p className="mt-1 text-xs text-stone-500">{invitation.label} · {invitation.max_extra_guests} extras</p></div><StatusBadge status={invitation.status} /></div><div className="mt-4"><Actions invitation={invitation} mobile /></div></article>)}</div></>}
-    {totalPages > 1 && <nav className="mt-6 flex items-center justify-center gap-3" aria-label="Paginación"><Link aria-disabled={page <= 1} className="rounded-lg border border-stone-200 px-3 py-2 text-sm aria-disabled:pointer-events-none aria-disabled:opacity-40" href={paginationHref(page - 1)}>Anterior</Link><span className="text-sm text-stone-500">Página {page} de {totalPages}</span><Link aria-disabled={page >= totalPages} className="rounded-lg border border-stone-200 px-3 py-2 text-sm aria-disabled:pointer-events-none aria-disabled:opacity-40" href={paginationHref(page + 1)}>Siguiente</Link></nav>}
-  </>;
+export function InvitationList({
+  invitations,
+  query,
+  status,
+  page,
+  totalPages,
+  notice,
+}: InvitationListProps) {
+  useEffect(() => {
+    if (notice)
+      toast.success(
+        {
+          created: 'Invitación creada.',
+          updated: 'Invitación actualizada.',
+          archived: 'Invitación archivada.',
+          restored: 'Invitación restaurada.',
+        }[notice] ?? 'Cambios guardados.'
+      );
+  }, [notice]);
+  async function copyLink(slug: string) {
+    await navigator.clipboard.writeText(invitationUrl(slug));
+    toast.success('Enlace copiado al portapapeles.');
+  }
+  const paginationHref = (nextPage: number) =>
+    `/admin/invitaciones?${new URLSearchParams({ ...(query ? { q: query } : {}), ...(status ? { status } : {}), page: String(nextPage) })}`;
+  return (
+    <>
+      <form
+        className='mb-6 grid gap-3 rounded-2xl border border-rose/20 bg-white p-4 sm:grid-cols-[1fr_180px_auto]'
+        method='get'
+      >
+        <label className='relative'>
+          <Search className='absolute left-3 top-3 text-stone-400' size={18} />
+          <input
+            name='q'
+            defaultValue={query}
+            className='w-full rounded-xl border border-stone-200 py-2.5 pl-10 pr-3 text-sm'
+            placeholder='Buscar por nombre'
+          />
+        </label>
+        <select
+          name='status'
+          defaultValue={status}
+          className='rounded-xl border border-stone-200 px-3 py-2.5 text-sm'
+        >
+          <option value=''>Todos los estados</option>
+          <option value='pending'>Pendiente</option>
+          <option value='attending'>Asiste</option>
+          <option value='not_attending'>No asiste</option>
+        </select>
+        <button className='rounded-xl bg-wine px-4 py-2.5 text-sm font-semibold text-white'>
+          Filtrar
+        </button>
+      </form>
+      {!invitations.length ? (
+        <div className='rounded-3xl border border-dashed border-rose/50 bg-white p-8 text-center text-sm text-stone-500'>
+          No hay invitaciones que coincidan con los filtros.
+        </div>
+      ) : (
+        <>
+          <div className='hidden overflow-hidden rounded-2xl border border-rose/20 bg-white md:block'>
+            <table className='w-full text-left text-sm'>
+              <thead className='bg-rose/10 text-stone-600'>
+                <tr>
+                  <th className='px-5 py-4'>Invitados</th>
+                  <th className='px-4 py-4'>Estado</th>
+                  <th className='px-4 py-4'>Extras</th>
+                  <th className='px-4 py-4'>Enlace</th>
+                  <th className='px-5 py-4 text-right'>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invitations.map((invitation) => (
+                  <tr key={invitation.id} className='border-t border-stone-100'>
+                    <td className='px-5 py-4'>
+                      <p className='font-semibold'>
+                        {invitation.guests.map((guest) => guest.full_name).join(', ')}
+                      </p>
+                      <p className='mt-1 text-xs text-stone-500'>
+                        {invitation.label}
+                        {invitation.archived_at ? ' · Archivada' : ''}
+                      </p>
+                    </td>
+                    <td className='px-4 py-4'>
+                      <StatusBadge status={invitation.status} />
+                    </td>
+                    <td className='px-4 py-4'>{invitation.max_extra_guests}</td>
+                    <td className='px-4 py-4'>
+                      <button
+                        onClick={() => void copyLink(invitation.public_slug)}
+                        className='inline-flex items-center gap-1 text-wine'
+                      >
+                        <Clipboard size={15} />
+                        Copiar
+                      </button>
+                    </td>
+                    <td className='px-5 py-4'>
+                      <Actions invitation={invitation} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className='space-y-3 md:hidden'>
+            {invitations.map((invitation) => (
+              <article
+                key={invitation.id}
+                className='rounded-2xl border border-rose/20 bg-white p-5'
+              >
+                <div className='flex items-start justify-between gap-3'>
+                  <div>
+                    <h2 className='font-semibold'>
+                      {invitation.guests.map((guest) => guest.full_name).join(', ')}
+                    </h2>
+                    <p className='mt-1 text-xs text-stone-500'>
+                      {invitation.label} · {invitation.max_extra_guests} extras
+                    </p>
+                  </div>
+                  <StatusBadge status={invitation.status} />
+                </div>
+                <div className='mt-4'>
+                  <Actions invitation={invitation} mobile />
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
+      )}
+      {totalPages > 1 && (
+        <nav className='mt-6 flex items-center justify-center gap-3' aria-label='Paginación'>
+          <Link
+            aria-disabled={page <= 1}
+            className='rounded-lg border border-stone-200 px-3 py-2 text-sm aria-disabled:pointer-events-none aria-disabled:opacity-40'
+            href={paginationHref(page - 1)}
+          >
+            Anterior
+          </Link>
+          <span className='text-sm text-stone-500'>
+            Página {page} de {totalPages}
+          </span>
+          <Link
+            aria-disabled={page >= totalPages}
+            className='rounded-lg border border-stone-200 px-3 py-2 text-sm aria-disabled:pointer-events-none aria-disabled:opacity-40'
+            href={paginationHref(page + 1)}
+          >
+            Siguiente
+          </Link>
+        </nav>
+      )}
+    </>
+  );
 }
 
-function StatusBadge({ status }: { status: RsvpStatus }) { return <span className="rounded-full bg-rose/15 px-2.5 py-1 text-xs font-semibold text-wine">{labels[status]}</span>; }
-function Actions({ invitation, mobile = false }: { invitation: InvitationSummary; mobile?: boolean }) { return <div className={`flex items-center ${mobile ? "justify-start" : "justify-end"} gap-3`}><Link href={`/admin/invitaciones/${invitation.id}/editar`} aria-label="Editar invitación" className="text-wine"><Pencil size={17} /></Link><button onClick={() => void navigator.clipboard.writeText(invitationUrl(invitation.public_slug)).then(() => toast.success("Enlace copiado al portapapeles."))} aria-label="Copiar enlace" className="text-wine"><Clipboard size={17} /></button>{invitation.archived_at ? <form action={restoreInvitation}><input type="hidden" name="id" value={invitation.id} /><button aria-label="Restaurar invitación" className="text-wine"><ArchiveRestore size={17} /></button></form> : <form action={archiveInvitation} onSubmit={(event) => { if (!window.confirm("¿Archivar esta invitación? Las respuestas RSVP se conservarán.")) event.preventDefault(); }}><input type="hidden" name="id" value={invitation.id} /><button aria-label="Archivar invitación" className="text-stone-500"><Trash2 size={17} /></button></form>}</div>; }
+function StatusBadge({ status }: { status: RsvpStatus }) {
+  return (
+    <span className='rounded-full bg-rose/15 px-2.5 py-1 text-xs font-semibold text-wine'>
+      {labels[status]}
+    </span>
+  );
+}
+function Actions({
+  invitation,
+  mobile = false,
+}: {
+  invitation: InvitationSummary;
+  mobile?: boolean;
+}) {
+  return (
+    <div className={`flex items-center ${mobile ? 'justify-start' : 'justify-end'} gap-3`}>
+      <Link
+        href={`/admin/invitaciones/${invitation.id}/editar`}
+        aria-label='Editar invitación'
+        className='text-wine'
+      >
+        <Pencil size={17} />
+      </Link>
+      <button
+        onClick={() =>
+          void navigator.clipboard
+            .writeText(invitationUrl(invitation.public_slug))
+            .then(() => toast.success('Enlace copiado al portapapeles.'))
+        }
+        aria-label='Copiar enlace'
+        className='text-wine'
+      >
+        <Clipboard size={17} />
+      </button>
+      {invitation.archived_at ? (
+        <form action={restoreInvitation}>
+          <input type='hidden' name='id' value={invitation.id} />
+          <button aria-label='Restaurar invitación' className='text-wine'>
+            <ArchiveRestore size={17} />
+          </button>
+        </form>
+      ) : (
+        <form
+          action={archiveInvitation}
+          onSubmit={(event) => {
+            if (!window.confirm('¿Archivar esta invitación? Las respuestas RSVP se conservarán.'))
+              event.preventDefault();
+          }}
+        >
+          <input type='hidden' name='id' value={invitation.id} />
+          <button aria-label='Archivar invitación' className='text-stone-500'>
+            <Trash2 size={17} />
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}

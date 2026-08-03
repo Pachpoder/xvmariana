@@ -17,10 +17,11 @@ export async function getFirstEvent() {
 
 export async function getEventSettings() {
   const { supabase } = await requireAdmin();
-  const { data, error } = await supabase.from("events").select("id, name, slug, invitation_image_path, loading_image_path, event_date, rsvp_deadline, loading_duration_ms, is_published, public_landing_enabled, landing_heading, landing_celebrant_name, landing_banner_image_path, landing_crown_image_path, landing_celebrant_image_path, landing_description, landing_details, landing_music_url, landing_music_autoplay, landing_rsvp_cta_text").order("created_at").limit(1).maybeSingle();
+  const { data, error } = await supabase.from("events").select("id, name, slug, invitation_image_path, loading_image_path, event_date, rsvp_deadline, loading_duration_ms, is_published").order("created_at").limit(1).maybeSingle();
   if (error) throw new Error("No fue posible cargar la configuración del evento.");
   return data;
 }
+
 
 export async function getInvitationById(id: string) {
   const { supabase } = await requireAdmin();

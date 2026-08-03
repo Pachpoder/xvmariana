@@ -25,6 +25,7 @@ La revisión visual comprueba la pantalla de login, ausencia de overflow horizon
 - La invitación pública tiene estados de carga, enlace no disponible y fallback de imagen.
 - El RSVP usa upsert por invitación; el doble envío no puede crear duplicados.
 - Las rutas administrativas se validan tanto en proxy como en el layout server-side por identidad y rol.
+- La landing mantiene un ancho limitado, padding lateral móvil y un diálogo RSVP nativo que permite Escape y conserva el foco dentro del modal.
 
 ## Seguridad
 
