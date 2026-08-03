@@ -29,6 +29,7 @@ Todos los milestones planificados están completados. Las siguientes tareas debe
 - La landing de `/` ya no consulta ni modifica contenido editorial desde Supabase o el administrador. Sus textos, imágenes, lugares, agenda y secciones se editan directamente en `src/lib/landing-content.ts`.
 - Las respuestas enviadas desde el formulario de la landing continúan guardándose en `landing_rsvp_submissions` y se consultan desde el panel administrativo.
 - Añadido un generador y descarga PNG del QR fijo de la landing en `/admin/configuracion`. Usa la URL explícita `NEXT_PUBLIC_APP_URL`, para evitar QR ligados a previews, y `qrcode` como dependencia de producción para generarlo localmente sin un servicio externo.
+- En la rama `main`, la ruta pública `/` muestra temporalmente el estado “En desarrollo” para que el QR ya distribuido sea seguro mientras la landing final continúa en la rama de desarrollo.
 
 ## Landing pública principal
 

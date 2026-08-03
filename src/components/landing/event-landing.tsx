@@ -30,6 +30,19 @@ export function PublicLandingPage() {
   );
 }
 
+export function PublicLandingUnderDevelopment() {
+  return (
+    <main className='grid min-h-svh place-items-center bg-[#f7f5ec] px-5 py-10 text-[#495343]'>
+      <PublicSectionContainer className='px-7 py-16 text-center sm:px-12'>
+        <Crown className='mx-auto text-[#b18d42]' size={46} strokeWidth={1.25} />
+        <p className='mt-7 text-xs font-semibold tracking-[0.28em] text-[#9b7b3d]'>MIS XV AÑOS</p>
+        <h1 className='mt-4 font-serif text-4xl text-[#59664d]'>En desarrollo</h1>
+        <p className='mt-5 text-sm leading-7 text-[#70796c]'>Muy pronto compartiremos todos los detalles de esta celebración.</p>
+      </PublicSectionContainer>
+    </main>
+  );
+}
+
 function LandingHero() {
   const { hero } = landingContent;
   return (
