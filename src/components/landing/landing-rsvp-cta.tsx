@@ -1,7 +1,7 @@
 'use client';
 
 import { startTransition, useActionState, useEffect, useRef, useState } from 'react';
-import { CheckCircle2, Send, X } from 'lucide-react';
+import { CheckCircle2, CircleAlert, Send, X } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 import type { z } from 'zod';
@@ -155,23 +155,33 @@ function LandingRsvpDialog({ onClose }: { onClose: () => void }) {
           className='flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#59664d] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60'
         >
           <Send size={17} />
-          {pending ? 'Enviando…' : 'Enviar respuesta'}
+          {pending ? 'Enviando tu respuesta…' : 'Enviar respuesta'}
         </button>
       </form>
       {state.status === 'success' && (
-        <p
+        <div
           role='status'
           aria-live='polite'
-          className='mt-4 flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800'
+          className='mt-4 flex gap-3 rounded-2xl border border-[#d6e0c8] bg-[#f6faef] p-4 text-[#495b3d] shadow-sm'
         >
-          <CheckCircle2 size={18} />
-          {state.message}
-        </p>
+          <CheckCircle2 size={22} className='mt-0.5 shrink-0' aria-hidden />
+          <div>
+            <p className='font-semibold'>¡Respuesta enviada!</p>
+            <p className='mt-0.5 text-sm leading-5'>{state.message}</p>
+          </div>
+        </div>
       )}
       {state.status === 'error' && (
-        <p role='alert' className='mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-800'>
-          {state.message}
-        </p>
+        <div
+          role='alert'
+          className='mt-4 flex gap-3 rounded-2xl border border-[#e8c8bd] bg-[#fff7f3] p-4 text-[#93462e]'
+        >
+          <CircleAlert size={22} className='mt-0.5 shrink-0' aria-hidden />
+          <div>
+            <p className='font-semibold'>No pudimos enviar tu respuesta</p>
+            <p className='mt-0.5 text-sm leading-5'>{state.message}</p>
+          </div>
+        </div>
       )}
     </dialog>
   );

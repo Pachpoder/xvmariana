@@ -66,13 +66,12 @@ export async function submitRsvp(_: RsvpActionState, formData: FormData): Promis
     );
   if (upsertError) return { status: 'error', message: 'No fue posible guardar la respuesta.' };
   revalidatePath('/');
-  revalidatePath(`/${parsed.data.slug}`);
   revalidatePath('/admin');
   revalidatePath('/admin/invitaciones');
   const message = existingRsvp
-    ? 'Tu respuesta fue actualizada correctamente.'
+    ? 'Hemos actualizado tu confirmación. ¡Gracias por avisarnos!'
     : prepared.response === 'attending'
-      ? 'Tu asistencia fue confirmada correctamente.'
-      : 'Tu respuesta fue registrada correctamente.';
+      ? '¡Qué alegría! Tu asistencia ha quedado confirmada.'
+      : 'Gracias por avisarnos. Tu respuesta quedó registrada.';
   return { status: 'success', message };
 }

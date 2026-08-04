@@ -30,6 +30,7 @@ Todos los milestones planificados están completados. Las siguientes tareas debe
 - Las respuestas enviadas desde el formulario de la landing continúan guardándose en `landing_rsvp_submissions` y se consultan desde el panel administrativo.
 - Añadido un generador y descarga PNG del QR fijo de la landing en `/admin/configuracion`. Usa la URL explícita `NEXT_PUBLIC_APP_URL`, para evitar QR ligados a previews, y `qrcode` como dependencia de producción para generarlo localmente sin un servicio externo.
 - En la rama `main`, la ruta pública `/` muestra temporalmente el estado “En desarrollo” para que el QR ya distribuido sea seguro mientras la landing final continúa en la rama de desarrollo.
+- El RSVP personalizado comunica de forma inmediata el guardado de una actualización mediante un estado de carga visible, bloquea reenvíos mientras procesa y muestra una confirmación o error con el estilo de la landing.
 - Añadida una segunda sección editorial en la landing de desarrollo: usa `background2.png`, fecha e iconos provistos para presentar padres, misa y recepción, con enlaces de Maps editables desde `src/lib/landing-content.ts`.
 - Añadida una tercera sección editorial en la landing de desarrollo: un itinerario alternado sobre `background3.png`, con eje `linea.png`, arreglo `rosa.png` y actividades editables desde el mismo archivo de contenido.
 - Añadida una cuarta sección editorial en la landing de desarrollo: código de vestimenta y confirmación pública dentro de `background1.png`, usando el mismo formulario RSVP existente y la paleta rosa, dorada y crema.

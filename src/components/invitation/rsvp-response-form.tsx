@@ -1,9 +1,9 @@
 'use client';
 
-import { startTransition, useActionState, useEffect, useRef } from 'react';
+import { startTransition, useActionState, useEffect, useRef, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, CircleAlert, LoaderCircle } from 'lucide-react';
 import type { z } from 'zod';
 import { submitRsvp, type RsvpActionState } from '@/actions/rsvp';
 import { rsvpFormSchema, type RsvpInput } from '@/lib/validation/rsvp';
@@ -33,7 +33,10 @@ export function RsvpResponseForm({
   compact?: boolean;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
+  const submittingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const submissionStartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [state, formAction, pending] = useActionState(submitRsvp, initialState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const existingResponse = invitation.initialRsvp;
   const {
     register,
@@ -56,9 +59,25 @@ export function RsvpResponseForm({
   useEffect(() => {
     if (state.status === 'success') formRef.current?.focus();
   }, [state.status]);
+  useEffect(
+    () => () => {
+      if (submittingTimerRef.current) clearTimeout(submittingTimerRef.current);
+      if (submissionStartTimerRef.current) clearTimeout(submissionStartTimerRef.current);
+    },
+    []
+  );
   function submit() {
-    if (formRef.current) startTransition(() => formAction(new FormData(formRef.current!)));
+    if (!formRef.current) return;
+    if (submittingTimerRef.current) clearTimeout(submittingTimerRef.current);
+    if (submissionStartTimerRef.current) clearTimeout(submissionStartTimerRef.current);
+    const formData = new FormData(formRef.current);
+    setIsSubmitting(true);
+    submittingTimerRef.current = setTimeout(() => setIsSubmitting(false), 650);
+    submissionStartTimerRef.current = setTimeout(() => {
+      startTransition(() => formAction(formData));
+    }, 180);
   }
+  const isSaving = pending || isSubmitting;
 
   return (
     <section
@@ -182,30 +201,50 @@ export function RsvpResponseForm({
           </p>
         )}
         <button
-          disabled={pending}
+          disabled={isSaving}
           className={compact ? 'min-h-11 w-full rounded-xl bg-[#947134] px-4 py-2.5 text-sm font-semibold text-[#fffaf0] shadow-[0_8px_18px_rgba(148,113,52,0.2)] transition-colors hover:bg-[#795a29] disabled:opacity-60' : 'min-h-11 w-full rounded-xl bg-wine px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60'}
         >
-          {pending
-            ? 'Guardando…'
+          {isSaving
+            ? 'Guardando tu respuesta…'
             : existingResponse
               ? 'Actualizar respuesta'
               : 'Confirmar asistencia'}
         </button>
       </form>
-      {state.status === 'success' && (
-        <p
+      {isSaving && (
+        <div
           role='status'
           aria-live='polite'
-          className='mt-4 flex items-center gap-2 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-800'
+          className={`mt-4 flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold ${compact ? 'bg-[#fff1f6] text-[#9e3e66]' : 'bg-rose/10 text-wine'}`}
         >
-          <CheckCircle2 size={18} />
-          {state.message}
-        </p>
+          <LoaderCircle size={18} className='animate-spin' aria-hidden />
+          Guardando los cambios…
+        </div>
       )}
-      {state.status === 'error' && (
-        <p role='alert' className='mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-800'>
-          {state.message}
-        </p>
+      {state.status === 'success' && !isSaving && (
+        <div
+          role='status'
+          aria-live='polite'
+          className={`mt-4 flex gap-3 rounded-2xl border p-4 shadow-sm ${compact ? 'border-[#e9c6d4] bg-[#fff6f9] text-[#873653]' : 'border-emerald-200 bg-emerald-50 text-emerald-900'}`}
+        >
+          <CheckCircle2 size={22} className='mt-0.5 shrink-0' aria-hidden />
+          <div>
+            <p className='font-semibold'>¡Listo, quedó guardado!</p>
+            <p className='mt-0.5 text-sm leading-5'>{state.message}</p>
+          </div>
+        </div>
+      )}
+      {state.status === 'error' && !isSaving && (
+        <div
+          role='alert'
+          className={`mt-4 flex gap-3 rounded-2xl border p-4 ${compact ? 'border-[#e8c8bd] bg-[#fff7f3] text-[#93462e]' : 'border-red-200 bg-red-50 text-red-800'}`}
+        >
+          <CircleAlert size={22} className='mt-0.5 shrink-0' aria-hidden />
+          <div>
+            <p className='font-semibold'>No pudimos guardar tu respuesta</p>
+            <p className='mt-0.5 text-sm leading-5'>{state.message}</p>
+          </div>
+        </div>
       )}
     </section>
   );

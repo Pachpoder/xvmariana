@@ -23,7 +23,7 @@ export async function submitLandingRsvp(
       message: parsed.error.issues[0]?.message ?? 'Revisa los datos ingresados.',
     };
   if (parsed.data.website)
-    return { status: 'success', message: 'Tu respuesta fue enviada correctamente.' };
+    return { status: 'success', message: 'Tu respuesta fue registrada correctamente.' };
 
   const supabase = createSupabaseAdminClient();
   const { data: event, error: eventError } = await supabase
@@ -49,7 +49,7 @@ export async function submitLandingRsvp(
     status: 'success',
     message:
       parsed.data.response === 'attending'
-        ? 'Tu asistencia fue confirmada correctamente.'
-        : 'Tu respuesta fue registrada correctamente.',
+        ? '¡Qué alegría! Tu asistencia ha quedado confirmada.'
+        : 'Gracias por avisarnos. Tu respuesta quedó registrada.',
   };
 }
