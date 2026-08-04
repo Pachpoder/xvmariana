@@ -85,13 +85,13 @@ function LandingCelebrantPhoto() {
 function LandingEventDetails() {
   const { eventDetails } = landingContent;
   return (
-    <section className='relative overflow-hidden bg-[#fffaf0] text-center'>
+    <section className='relative z-30 overflow-hidden text-center'>
       <LandingImage
         src='/assets/landing/background/background2.png'
         alt='Detalles de la celebración'
-        className='block h-auto w-full'
+        className='relative z-10 block h-auto w-full'
       />
-      <div className='pointer-events-none absolute inset-x-[9%] top-[9%] z-10'>
+      <div className='pointer-events-none absolute inset-x-[9%] top-[9%] z-20'>
         <p className='font-[family-name:var(--font-lora)] text-[clamp(0.95rem,4.2vw,1.45rem)] font-semibold leading-[1.36] tracking-[0.16em] text-[#8c713c]'>
           {eventDetails.invitation.map((line) => (
             <span key={line} className='block'>
@@ -100,7 +100,7 @@ function LandingEventDetails() {
           ))}
         </p>
       </div>
-      <div className='pointer-events-none absolute inset-x-[10%] top-[23%] z-10 grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-[#c65382]'>
+      <div className='pointer-events-none absolute inset-x-[10%] top-[23%] z-20 grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-[#c65382]'>
         <p className='font-[family-name:var(--font-luxurious-script)] text-[clamp(1.65rem,7vw,2.5rem)] leading-[1.05]'>
           {eventDetails.parents.first}
         </p>
@@ -112,7 +112,7 @@ function LandingEventDetails() {
       <LandingImage
         src='/assets/landing/fecha21agosto.png'
         alt='Viernes 21 de agosto de 2026'
-        className='pointer-events-none absolute left-1/2 top-[35%] z-10 w-[72%] -translate-x-1/2'
+        className='pointer-events-none absolute left-1/2 top-[35%] z-20 w-[72%] -translate-x-1/2'
       />
       <EventLocationCard
         iconPath='/assets/landing/iconoRecepcion.png'
@@ -133,7 +133,7 @@ function LandingEventDetails() {
 function LandingItinerary() {
   const { itinerary } = landingContent;
   return (
-    <section className='relative overflow-hidden bg-[#526445]'>
+    <section className='relative z-10 -mt-[39px] overflow-hidden bg-[#526445] sm:-mt-[47px]'>
       <LandingImage
         src='/assets/landing/background/background3.png'
         alt='Bosque que acompaña el itinerario de actividades'
@@ -220,7 +220,7 @@ function EventLocationCard({
   className: string;
 }) {
   return (
-    <section className={`absolute inset-x-[8%] z-10 text-center ${className}`}>
+    <section className={`absolute inset-x-[8%] z-20 text-center ${className}`}>
       <LandingImage src={iconPath} alt={iconAlt} className='pointer-events-none mx-auto w-[11%]' />
       <h2 className='mt-1.5 font-[family-name:var(--font-lora)] text-sm font-semibold tracking-[0.16em] text-[#8c713c] sm:text-base'>
         {location.label}

@@ -33,6 +33,8 @@ Todos los milestones planificados están completados. Las siguientes tareas debe
 - El RSVP personalizado comunica de forma inmediata el guardado de una actualización mediante un estado de carga visible, bloquea reenvíos mientras procesa y muestra una confirmación o error con el estilo de la landing.
 - Añadida una segunda sección editorial en la landing de desarrollo: usa `background2.png`, fecha e iconos provistos para presentar padres, misa y recepción, con enlaces de Maps editables desde `src/lib/landing-content.ts`.
 - Añadida una tercera sección editorial en la landing de desarrollo: un itinerario alternado sobre `background3.png`, con eje `linea.png`, arreglo `rosa.png` y actividades editables desde el mismo archivo de contenido.
+- El itinerario se solapa de forma responsive por detrás del borde de papel rasgado de la sección anterior (39 px en móvil y 47 px desde `sm`), preservando el orden visual y evitando separaciones entre ambos fondos.
+- La sección de detalles no añade un color de fondo propio en el borde rasgado: las zonas transparentes de `background2.png` revelan el bosque de `background3.png` colocado por detrás.
 - Añadida una cuarta sección editorial en la landing de desarrollo: código de vestimenta y confirmación pública dentro de `background1.png`, usando el mismo formulario RSVP existente y la paleta rosa, dorada y crema.
 - Las invitaciones personalizadas conservan su loading y sobre animado; tras abrirse muestran la misma landing pública con un bloque seguro de nombres/cupo y el RSVP propio de la invitación, sin exponer notas internas.
 

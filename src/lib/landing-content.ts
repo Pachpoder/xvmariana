@@ -23,7 +23,7 @@ export const landingContent = {
   eventDetails: {
     invitation: ['ACOMPÁÑAME EN ESTE', 'DÍA TAN ESPECIAL', 'JUNTO A MIS PADRES:'],
     parents: {
-      first: 'Marco Antonio Morales Tomas',
+      first: 'Marco Antonio Morales Tómas',
       second: 'Elizabeth Castillo González',
     },
     ceremony: {
@@ -36,7 +36,8 @@ export const landingContent = {
       label: 'RECEPCIÓN',
       venue: 'JARDÍN EMANUEL, SAN ANTONIO A.C.',
       time: '6:45 p.m.',
-      mapsUrl: 'https://www.google.com/maps/search/?api=1&query=Jard%C3%ADn+Emanuel+San+Antonio+A.C.',
+      mapsUrl:
+        'https://www.google.com/maps/search/?api=1&query=Jard%C3%ADn+Emanuel+San+Antonio+A.C.',
     },
   },
   itinerary: {
