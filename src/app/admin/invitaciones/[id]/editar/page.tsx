@@ -8,7 +8,7 @@ export default async function EditInvitationPage({ params }: { params: Promise<{
   return (
     <>
       <p className='text-sm font-medium text-gold'>INVITACIONES</p>
-      <h1 className='mt-2 font-serif text-4xl text-wine'>Editar invitación</h1>
+      <h1 className='mt-2 font-serif text-4xl text-wine'>Editar invitación personalizada</h1>
       <div className='mt-8 max-w-2xl'>
         <InvitationForm event={event} invitation={invitation} />
       </div>

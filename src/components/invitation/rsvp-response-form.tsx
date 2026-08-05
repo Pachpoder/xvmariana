@@ -104,7 +104,7 @@ export function RsvpResponseForm({
       <form
         ref={formRef}
         tabIndex={-1}
-        className='mt-4 space-y-4'
+        className={compact ? 'mt-3 space-y-3' : 'mt-4 space-y-4'}
         noValidate
         onSubmit={(event) => {
           event.preventDefault();
@@ -185,7 +185,7 @@ export function RsvpResponseForm({
             {...register('message')}
             maxLength={500}
             aria-invalid={Boolean(errors.message)}
-            className={`mt-1 min-h-20 w-full rounded-lg border px-3 py-2 text-sm ${compact ? 'border-[#dfcdbd] bg-[#fffdf8]/85 text-[#5e4930] placeholder:text-[#b8a58e]' : 'border-stone-200'}`}
+            className={`mt-1 w-full rounded-lg border px-3 py-2 text-sm ${compact ? 'min-h-[4.5rem] border-[#dfcdbd] bg-[#fffdf8]/85 text-[#5e4930] placeholder:text-[#b8a58e]' : 'min-h-20 border-stone-200'}`}
           />
         </label>
         <label

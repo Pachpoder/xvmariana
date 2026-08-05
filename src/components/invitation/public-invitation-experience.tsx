@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { Heart, UsersRound } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion, type Transition } from 'motion/react';
+import { UsersRound } from 'lucide-react';
 import { PublicLandingPage } from '@/components/landing/event-landing';
+import { PersonalizedAttendanceForm } from '@/components/invitation/personalized-attendance-form';
+import { LandingImage } from '@/components/landing/landing-image';
 import { nextInvitationStage, type InvitationStage } from '@/lib/invitation-experience';
 import type { PublicInvitationDto } from '@/lib/queries/public-invitation';
-import { RsvpForm } from './rsvp-form';
 
 export function PublicInvitationExperience({
   invitation,
@@ -24,11 +25,24 @@ export function PublicInvitationExperience({
     return () => window.clearTimeout(timer);
   }, [invitation.invitationImagePath, invitation.loadingDurationMs]);
 
-  const transition = reducedMotion
+  useEffect(() => {
+    if (stage !== 'opening') return;
+    const timer = window.setTimeout(() => setStage('invitation'), reducedMotion ? 0 : 4200);
+    return () => window.clearTimeout(timer);
+  }, [reducedMotion, stage]);
+
+  const transition: Transition = reducedMotion
     ? { duration: 0 }
-    : { duration: 0.7, ease: 'easeInOut' as const };
+    : { duration: 0.9, ease: [0.22, 1, 0.36, 1] };
+  const openingTransition: Transition = reducedMotion
+    ? { duration: 0 }
+    : { duration: 1.8, ease: [0.22, 1, 0.36, 1] };
+  const invitationImagePath =
+    invitation.invitationImagePath === '/assets/invitacion-placeholder.svg'
+      ? '/assets/landing/invitacion.jpeg'
+      : invitation.invitationImagePath;
   return (
-    <main className={stage === 'invitation' ? 'min-h-svh' : 'min-h-svh overflow-hidden bg-[#481c28] px-4 py-6 text-[#39241e] sm:px-8'}>
+    <main className={stage === 'invitation' ? 'min-h-svh' : 'min-h-svh overflow-hidden bg-[#f7f5ec] px-4 py-6 text-[#495343] sm:px-8'}>
       <AnimatePresence mode='wait'>
         {stage === 'loading' && (
           <motion.section
@@ -37,18 +51,34 @@ export function PublicInvitationExperience({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={transition}
-            className='grid min-h-[calc(100svh-3rem)] place-items-center text-center text-white'
+            className='relative grid min-h-[calc(100svh-3rem)] place-items-center overflow-hidden text-center'
           >
-            <div>
+            <LandingImage
+              src='/assets/landing/flor_arriba.png.png'
+              alt=''
+              className='pointer-events-none absolute -bottom-8 -left-14 w-52 opacity-70 sm:w-72'
+            />
+            <LandingImage
+              src='/assets/landing/flor_bajo.png'
+              alt=''
+              className='pointer-events-none absolute -right-12 -top-8 w-56 opacity-70 sm:w-80'
+            />
+            <div
+              role='status'
+              aria-live='polite'
+              className='relative z-10 rounded-[2rem] border border-[#d7d5ba] bg-[#fffdf8]/90 px-9 py-10 shadow-[0_24px_70px_rgba(76,87,68,0.12)] backdrop-blur-sm sm:px-14'
+            >
               <motion.div
                 animate={reducedMotion ? {} : { rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                className='mx-auto grid size-16 place-items-center rounded-full border-2 border-gold border-t-transparent'
-              >
-                <Heart size={25} />
-              </motion.div>
-              <p className='mt-6 font-serif text-3xl'>Una invitación especial</p>
-              <p className='mt-2 text-sm text-white/70'>Preparando un momento para ti…</p>
+                transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
+                className='mx-auto size-10 rounded-full border-[3px] border-[#d96f9d] border-t-transparent'
+              />
+              <p className='mt-6 font-[family-name:var(--font-lora)] text-xl font-semibold tracking-[0.08em] text-[#c65382]'>
+                Cargando tu invitación
+              </p>
+              <p className='mt-3 font-[family-name:var(--font-lora)] text-sm font-semibold tracking-[0.08em] text-[#8c713c]'>
+                Estamos preparando un momento especial para ti…
+              </p>
             </div>
           </motion.section>
         )}
@@ -60,49 +90,61 @@ export function PublicInvitationExperience({
             transition={transition}
             className='grid min-h-[calc(100svh-3rem)] place-items-center'
           >
-            <div className='w-full max-w-sm [perspective:1200px]'>
+            <div className='w-full max-w-md [perspective:1600px]'>
               <button
                 type='button'
                 disabled={stage === 'opening'}
                 onClick={() => setStage(nextInvitationStage(stage))}
                 aria-label='Abrir invitación'
                 aria-describedby='envelope-help'
-                className='relative block aspect-[1.45/1] w-full rounded-md bg-[#e6caa3] text-left shadow-[0_30px_70px_rgba(0,0,0,0.35)] outline-offset-8 focus-visible:outline-2 focus-visible:outline-gold disabled:cursor-default'
+                className='relative block aspect-[1.25/1] w-full text-left outline-offset-8 focus-visible:outline-2 focus-visible:outline-gold disabled:cursor-default'
               >
                 <motion.div
-                  className='absolute inset-x-0 top-0 z-20 h-[55%] origin-top bg-[#f6dfb9] [clip-path:polygon(0_0,100%_0,50%_100%)]'
-                  animate={{ rotateX: stage === 'opening' ? -175 : 0 }}
-                  transition={transition}
-                  style={{ transformStyle: 'preserve-3d' }}
-                />
-                <div className='absolute inset-0 bg-[#d9b887] [clip-path:polygon(0_0,50%_52%,100%_0,100%_100%,0_100%)]' />
-                <motion.div
-                  className='absolute left-[8%] right-[8%] top-[10%] z-10 h-[85%] rounded-sm bg-cream p-4 shadow-lg'
+                  className='absolute left-[25%] top-[6%] z-10 aspect-[9/16] w-[50%] overflow-hidden rounded-[0.35rem] bg-[#fffdf8] shadow-[0_16px_30px_rgba(76,87,68,0.2)]'
                   initial={false}
                   animate={{
-                    y: stage === 'opening' ? -150 : 15,
-                    opacity: stage === 'opening' ? 1 : 0.8,
+                    y: stage === 'opening' ? '-52%' : '8%',
+                    opacity: stage === 'opening' ? 1 : 0,
                     rotate: stage === 'opening' ? 0 : 1,
+                    zIndex: stage === 'opening' ? 40 : 10,
                   }}
-                  transition={transition}
-                  onAnimationComplete={() => {
-                    if (stage === 'opening') setStage('invitation');
-                  }}
+                  transition={openingTransition}
                 >
-                  <div className='h-full border border-gold/40' />
+                  <LandingImage
+                    src={invitationImagePath}
+                    alt={`Invitación de ${invitation.eventName}`}
+                    className='h-full w-full object-contain'
+                  />
                 </motion.div>
                 <motion.div
-                  className='absolute left-1/2 top-1/2 z-30 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-wine text-gold shadow-md'
-                  animate={{
-                    scale: stage === 'opening' ? 0 : 1,
-                    opacity: stage === 'opening' ? 0 : 1,
-                  }}
-                  transition={reducedMotion ? { duration: 0 } : { duration: 0.35 }}
+                  className='pointer-events-none absolute inset-0 z-20'
+                  animate={{ y: stage === 'opening' ? '-1.8%' : '0%' }}
+                  transition={openingTransition}
                 >
-                  <Heart size={24} fill='currentColor' />
+                  <LandingImage
+                    src='/assets/landing/sobre.png'
+                    alt='Sobre de invitación'
+                    className='h-full w-full object-contain drop-shadow-[0_24px_28px_rgba(76,53,43,0.22)]'
+                  />
+                </motion.div>
+                <motion.div
+                  className='pointer-events-none absolute inset-0 z-30 origin-[50%_13%]'
+                  animate={{
+                    rotateX: stage === 'opening' ? -175 : 0,
+                    y: stage === 'opening' ? '1.8%' : '0%',
+                  }}
+                  transition={openingTransition}
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  <LandingImage src='/assets/landing/pestanaSobre.png' alt='' className='h-full w-full object-contain' />
+                  <LandingImage
+                    src='/assets/landing/sello.png'
+                    alt='Sello del sobre'
+                    className='absolute left-[41.5%] top-[51.5%] w-[17%]'
+                  />
                 </motion.div>
               </button>
-              <p id='envelope-help' className='mt-8 text-center text-sm text-white/80'>
+              <p id='envelope-help' className='mt-7 text-center font-[family-name:var(--font-lora)] text-sm font-semibold tracking-[0.08em] text-[#8c713c]'>
                 Toca el sobre para abrir tu invitación
               </p>
             </div>
@@ -127,7 +169,7 @@ function PersonalizedLanding({
 }: {
   invitation: PublicInvitationDto;
   slug: string;
-  transition: { duration: number; ease?: 'easeInOut' };
+  transition: Transition;
 }) {
   return (
     <motion.section
@@ -138,13 +180,35 @@ function PersonalizedLanding({
       className='w-full'
     >
       <PublicLandingPage
-        personalizedContent={<PersonalizedInvitationDetails invitation={invitation} />}
-        rsvpContent={<RsvpForm slug={slug} invitation={invitation} compact />}
+        personalizedContent={<PersonalizedInvitationDetails invitation={invitation} slug={slug} />}
+        hideAttendance
       />
     </motion.section>
   );
 }
 
-function PersonalizedInvitationDetails({ invitation }: { invitation: PublicInvitationDto }) {
-  return <section className='border-y border-[#e2d4c0] bg-[#fffdf8] px-6 py-9 text-center text-[#8c713c] sm:px-10'><h1 className='font-[family-name:var(--font-luxurious-script)] text-4xl leading-none text-[#c65382]'>Esta invitación es para</h1><div className='mt-5 space-y-1 font-[family-name:var(--font-luxurious-script)] text-3xl leading-tight text-[#c65382]'>{invitation.guestNames.map((name) => <p key={name}>{name}</p>)}</div><p className='mx-auto mt-6 flex max-w-xs items-center justify-center gap-2 font-[family-name:var(--font-lora)] text-sm leading-6 text-[#8c713c]'><UsersRound size={18} className='shrink-0 text-[#d96f9d]' />{invitation.maxExtraGuests === 0 ? 'Invitación personal' : `${invitation.maxExtraGuests} acompañante${invitation.maxExtraGuests === 1 ? '' : 's'} adicional${invitation.maxExtraGuests === 1 ? '' : 'es'} permitido${invitation.maxExtraGuests === 1 ? '' : 's'}`}</p></section>;
+function PersonalizedInvitationDetails({ invitation, slug }: { invitation: PublicInvitationDto; slug: string }) {
+  const maximumGuests = invitation.guestNames.length + invitation.maxExtraGuests;
+  return (
+    <section className='border-y border-[#e2d4c0] bg-[#fffdf8] px-6 py-9 text-center text-[#8c713c] sm:px-10'>
+      <h1 className='font-[family-name:var(--font-lora)] text-lg font-semibold tracking-[0.08em] text-[#8c713c] sm:text-xl'>
+        Esta invitación es para
+      </h1>
+      <div className='mt-5 space-y-1 font-[family-name:var(--font-luxurious-script)] text-3xl leading-tight text-[#c65382]'>
+        {invitation.guestNames.map((name) => (
+          <p key={name}>{name}</p>
+        ))}
+      </div>
+      <p className='mx-auto mt-6 flex max-w-xs items-center justify-center gap-2 font-[family-name:var(--font-lora)] text-sm font-semibold leading-6 text-[#8c713c]'>
+        <UsersRound size={18} className='shrink-0 text-[#d96f9d]' />
+        Pase para {maximumGuests} persona{maximumGuests === 1 ? '' : 's'}
+      </p>
+      <PersonalizedAttendanceForm
+        slug={slug}
+        namedGuestLimit={invitation.guestNames.length}
+        maxExtraGuests={invitation.maxExtraGuests}
+        initialRsvp={invitation.initialRsvp}
+      />
+    </section>
+  );
 }

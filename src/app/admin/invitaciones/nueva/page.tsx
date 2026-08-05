@@ -7,7 +7,7 @@ export default async function NewInvitationPage() {
   return (
     <>
       <p className='text-sm font-medium text-gold'>INVITACIONES</p>
-      <h1 className='mt-2 font-serif text-4xl text-wine'>Nueva invitación</h1>
+      <h1 className='mt-2 font-serif text-4xl text-wine'>Nueva invitación personalizada</h1>
       <div className='mt-8 max-w-2xl'>
         <InvitationForm event={event} />
       </div>

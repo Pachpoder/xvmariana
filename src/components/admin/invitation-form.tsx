@@ -1,22 +1,19 @@
 'use client';
 
 import { useActionState, useEffect, useRef, startTransition } from 'react';
-import { useFieldArray, useForm, useWatch } from 'react-hook-form';
-import { Plus, Star, Trash2 } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { createInvitation, updateInvitation } from '@/actions/invitations';
 import type { InvitationActionState } from '@/actions/invitations';
 
-type GuestField = { fullName: string; isPrimary: boolean };
 const initialInvitationActionState: InvitationActionState = {};
 type FormValues = {
   id?: string;
   eventId: string;
-  label: string;
+  recipientName: string;
   slug: string;
-  maxExtraGuests: number;
+  maxGuests: number;
   internalNotes: string;
-  guests: GuestField[];
 };
 type InvitationFormProps = {
   event: { id: string; name: string };
@@ -36,39 +33,34 @@ export function InvitationForm({ event, invitation }: InvitationFormProps) {
   const [state, formAction, pending] = useActionState(action, initialInvitationActionState);
   const {
     register,
-    control,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
       id: invitation?.id,
       eventId: event.id,
-      label: invitation?.label ?? '',
+      recipientName:
+        invitation?.guests.find((guest) => guest.is_primary)?.full_name ??
+        invitation?.guests[0]?.full_name ??
+        invitation?.label ??
+        '',
       slug: invitation?.public_slug ?? '',
-      maxExtraGuests: invitation?.max_extra_guests ?? 0,
+      maxGuests: (invitation?.max_extra_guests ?? 0) + 1,
       internalNotes: invitation?.internal_notes ?? '',
-      guests: invitation?.guests.map((guest) => ({
-        fullName: guest.full_name,
-        isPrimary: guest.is_primary,
-      })) ?? [{ fullName: '', isPrimary: true }],
     },
   });
-  const { fields, append, remove } = useFieldArray({ control, name: 'guests' });
-  const guests = useWatch({ control, name: 'guests' }) ?? [];
 
   useEffect(() => {
     if (state.error) toast.error(state.error);
   }, [state.error]);
-  function choosePrimary(index: number) {
-    guests.forEach((_, guestIndex) =>
-      setValue(`guests.${guestIndex}.isPrimary`, guestIndex === index)
-    );
-  }
   function submit() {
     if (!formRef.current) return;
     const data = new FormData(formRef.current);
-    data.set('guests', JSON.stringify(guests));
+    const recipientName = String(data.get('recipientName') ?? '').trim();
+    const maxGuests = Number(data.get('maxGuests'));
+    data.set('label', recipientName);
+    data.set('maxExtraGuests', String(Math.max(0, maxGuests - 1)));
+    data.set('guests', JSON.stringify([{ fullName: recipientName, isPrimary: true }]));
     startTransition(() => formAction(data));
   }
 
@@ -89,80 +81,48 @@ export function InvitationForm({ event, invitation }: InvitationFormProps) {
         <h2 className='mt-2 font-serif text-2xl text-wine'>Datos de la invitación</h2>
       </div>
       <label className='block text-sm font-medium'>
-        Etiqueta interna
+        ¿Para quién es esta invitación?
         <input
-          {...register('label', { required: 'La etiqueta es obligatoria.' })}
+          {...register('recipientName', { required: 'Indica una persona o familia.' })}
           className='mt-2 w-full rounded-xl border border-stone-200 px-4 py-3'
-          placeholder='Ej. Familia Ovando'
+          placeholder='Ej. Familia Ovando o Ana Rousselin'
         />
+        <span className='mt-1 block text-xs font-normal text-stone-500'>
+          Escribe un solo nombre o el nombre de una familia; no necesitas agregar a cada persona.
+        </span>
       </label>
-      {errors.label && <p className='text-sm text-red-700'>{errors.label.message}</p>}
+      {errors.recipientName && <p className='text-sm text-red-700'>{errors.recipientName.message}</p>}
       <div className='grid gap-5 sm:grid-cols-2'>
         <label className='block text-sm font-medium'>
-          Extras permitidos
+          Pase para
           <input
-            {...register('maxExtraGuests', { valueAsNumber: true, min: 0 })}
+            {...register('maxGuests', { valueAsNumber: true, min: 1 })}
             type='number'
-            min='0'
+            min='1'
             className='mt-2 w-full rounded-xl border border-stone-200 px-4 py-3'
           />
+          <span className='mt-1 block text-xs font-normal text-stone-500'>
+            Número máximo de personas que pueden asistir con este pase, incluida la persona o familia.
+          </span>
         </label>
         <label className='block text-sm font-medium'>
-          Slug personalizado <span className='font-normal text-stone-500'>(opcional)</span>
+          Enlace personalizado <span className='font-normal text-stone-500'>(opcional)</span>
           <input
             {...register('slug')}
             className='mt-2 w-full rounded-xl border border-stone-200 px-4 py-3'
-            placeholder='Se genera desde el primer nombre'
+            placeholder='Se genera desde el nombre o familia'
           />
           <span className='mt-1 block text-xs font-normal text-stone-500'>
-            Se normaliza a minúsculas y añade un sufijo aleatorio si se deja vacío.
+            Si lo dejas vacío, se genera automáticamente y añade un sufijo único.
           </span>
         </label>
       </div>
-      <fieldset>
-        <legend className='text-sm font-medium'>Nombres invitados</legend>
-        <p className='mt-1 text-xs text-stone-500'>
-          Agrega al menos un nombre y selecciona el principal.
+      {invitation && invitation.guests.length > 1 && (
+        <p className='rounded-xl border border-gold/30 bg-gold/10 p-3 text-sm text-stone-700'>
+          Esta invitación tenía varios nombres. Al guardar, se usará únicamente el nombre o familia
+          indicado arriba.
         </p>
-        <div className='mt-3 space-y-3'>
-          {fields.map((field, index) => (
-            <div key={field.id} className='flex gap-2'>
-              <input
-                {...register(`guests.${index}.fullName` as const, {
-                  required: 'El nombre es obligatorio.',
-                })}
-                className='min-w-0 flex-1 rounded-xl border border-stone-200 px-4 py-3'
-                placeholder='Nombre completo'
-              />
-              <button
-                type='button'
-                aria-label='Elegir como principal'
-                onClick={() => choosePrimary(index)}
-                className={`rounded-xl border px-3 ${guests[index]?.isPrimary ? 'border-gold bg-gold/10 text-gold' : 'border-stone-200 text-stone-500'}`}
-              >
-                <Star size={18} fill={guests[index]?.isPrimary ? 'currentColor' : 'none'} />
-              </button>
-              <button
-                type='button'
-                aria-label='Eliminar nombre'
-                disabled={fields.length === 1}
-                onClick={() => remove(index)}
-                className='rounded-xl border border-stone-200 px-3 text-stone-500 disabled:opacity-40'
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-          ))}
-        </div>
-        <button
-          type='button'
-          onClick={() => append({ fullName: '', isPrimary: false })}
-          className='mt-4 inline-flex items-center gap-2 text-sm font-semibold text-wine'
-        >
-          <Plus size={17} />
-          Agregar nombre
-        </button>
-      </fieldset>
+      )}
       <label className='block text-sm font-medium'>
         Notas internas{' '}
         <span className='font-normal text-stone-500'>(no se muestran a invitados)</span>

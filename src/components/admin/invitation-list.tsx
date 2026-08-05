@@ -26,6 +26,15 @@ function invitationUrl(slug: string) {
   return base ? `${base}/${slug}` : `/${slug}`;
 }
 
+function passSize(invitation: InvitationSummary) {
+  return invitation.guests.length + invitation.max_extra_guests;
+}
+
+function passLabel(invitation: InvitationSummary) {
+  const total = passSize(invitation);
+  return `${total} persona${total === 1 ? '' : 's'}`;
+}
+
 export function InvitationList({
   invitations,
   query,
@@ -63,7 +72,7 @@ export function InvitationList({
             name='q'
             defaultValue={query}
             className='w-full rounded-xl border border-stone-200 py-2.5 pl-10 pr-3 text-sm'
-            placeholder='Buscar por nombre'
+            placeholder='Buscar por persona o familia'
           />
         </label>
         <select
@@ -90,9 +99,9 @@ export function InvitationList({
             <table className='w-full text-left text-sm'>
               <thead className='bg-rose/10 text-stone-600'>
                 <tr>
-                  <th className='px-5 py-4'>Invitados</th>
+                  <th className='px-5 py-4'>Persona o familia</th>
                   <th className='px-4 py-4'>Estado</th>
-                  <th className='px-4 py-4'>Extras</th>
+                  <th className='px-4 py-4'>Pase</th>
                   <th className='px-4 py-4'>Enlace</th>
                   <th className='px-5 py-4 text-right'>Acciones</th>
                 </tr>
@@ -101,18 +110,16 @@ export function InvitationList({
                 {invitations.map((invitation) => (
                   <tr key={invitation.id} className='border-t border-stone-100'>
                     <td className='px-5 py-4'>
-                      <p className='font-semibold'>
-                        {invitation.guests.map((guest) => guest.full_name).join(', ')}
-                      </p>
+                      <p className='font-semibold'>{invitation.label}</p>
                       <p className='mt-1 text-xs text-stone-500'>
-                        {invitation.label}
+                        Invitación personalizada
                         {invitation.archived_at ? ' · Archivada' : ''}
                       </p>
                     </td>
                     <td className='px-4 py-4'>
                       <StatusBadge status={invitation.status} />
                     </td>
-                    <td className='px-4 py-4'>{invitation.max_extra_guests}</td>
+                    <td className='px-4 py-4 font-medium text-stone-700'>{passLabel(invitation)}</td>
                     <td className='px-4 py-4'>
                       <button
                         onClick={() => void copyLink(invitation.public_slug)}
@@ -138,11 +145,9 @@ export function InvitationList({
               >
                 <div className='flex items-start justify-between gap-3'>
                   <div>
-                    <h2 className='font-semibold'>
-                      {invitation.guests.map((guest) => guest.full_name).join(', ')}
-                    </h2>
+                    <h2 className='font-semibold'>{invitation.label}</h2>
                     <p className='mt-1 text-xs text-stone-500'>
-                      {invitation.label} · {invitation.max_extra_guests} extras
+                      Pase para {passLabel(invitation)}
                     </p>
                   </div>
                   <StatusBadge status={invitation.status} />
