@@ -1,11 +1,20 @@
 import Link from 'next/link';
 import { CalendarHeart, ClipboardList, LayoutDashboard, Settings, Ticket } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { adminAudienceCopy } from '@/lib/admin-audience-copy';
 
 const links = [
   { href: '/admin', label: 'Resumen', icon: LayoutDashboard },
-  { href: '/admin/invitaciones', label: 'Invitaciones', icon: Ticket },
-  { href: '/admin/respuestas-landing', label: 'Respuestas landing', icon: ClipboardList },
+  {
+    href: '/admin/invitaciones',
+    label: adminAudienceCopy.personalized.navLabel,
+    icon: Ticket,
+  },
+  {
+    href: '/admin/respuestas-landing',
+    label: adminAudienceCopy.publicLanding.navLabel,
+    icon: ClipboardList,
+  },
   { href: '/admin/configuracion', label: 'Configuración', icon: Settings },
 ];
 

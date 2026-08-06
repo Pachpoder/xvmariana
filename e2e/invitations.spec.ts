@@ -54,14 +54,15 @@ test("muestra invitación pública, RSVP positivo, negativo y actualización", a
   await expect(page.getByRole("status")).toContainText("respuesta ha sido guardada");
 });
 
-test("muestra estados de enlace inválido e invitación inactiva", async ({ page }) => {
+test("muestra un enlace inválido y elimina visualmente una invitación", async ({ page }) => {
   await page.goto("/enlace-invalido-e2e");
   await expect(page.getByText("Esta invitación no está disponible")).toBeVisible();
   await login(page);
   await page.goto("/admin/invitaciones");
   page.on("dialog", (dialog) => dialog.accept());
-  await page.getByText("E2E invitación editada").locator("xpath=ancestor::tr").getByRole("button", { name: "Archivar invitación" }).click();
-  await expect(page.getByText("Invitación archivada.")).toBeVisible();
+  await page.getByText("E2E invitación editada").locator("xpath=ancestor::tr").getByRole("button", { name: "Eliminar invitación del listado" }).click();
+  await expect(page.getByText("Invitación eliminada del listado.")).toBeVisible();
+  await expect(page.getByText("E2E invitación editada")).toBeHidden();
   await page.goto(`/${invitationSlug}`);
   await expect(page.getByText("Esta invitación no está disponible")).toBeVisible();
 });

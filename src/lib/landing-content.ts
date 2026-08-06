@@ -15,10 +15,10 @@ export const landingContent = {
   celebrant: {
     title: 'MIS XV AÑOS',
     name: 'Mariana',
-    date: '20.08.2026',
+    date: '21.08.2026',
     imagePath: '/assets/landing/background/background1.png' as string | null,
     description:
-      'Hoy celebramos con alegría los XV años de Mariana, una etapa que simboliza crecimiento, ilusión y el comienzo de un hermoso camino hacia el futuro.',
+      'Hoy celebramos con alegría los XV años\nde Mariana, una etapa que simboliza\ncrecimiento, ilusión y el comienzo\nde un hermoso camino hacia el futuro.',
   },
   eventDetails: {
     invitation: ['ACOMPÁÑAME EN ESTE', 'DÍA TAN ESPECIAL', 'JUNTO A MIS PADRES:'],
@@ -39,6 +39,17 @@ export const landingContent = {
       mapsUrl:
         'https://www.google.com/maps/search/?api=1&query=Jard%C3%ADn+Emanuel+San+Antonio+A.C.',
     },
+    parking: {
+      label: 'PARQUEO PÚBLICO',
+      price: 'VALOR Q30.00',
+      description:
+        'DISPONIBLE A POCOS METROS. CUPOS LIMITADOS, POR LO QUE RECOMENDAMOS HACER CARPOOL.',
+    },
+    gift: {
+      heading: '¡GRACIAS POR ACOMPAÑARNOS EN ESTE DÍA TAN ESPECIAL!',
+      message:
+        'Si decides que tu obsequio sea en efectivo, te hemos dado un sobre que podrás entregar a la quinceañera durante la celebración.',
+    },
   },
   itinerary: {
     heading: 'Itinerario',
@@ -47,12 +58,12 @@ export const landingContent = {
     notice: 'INICIAREMOS PUNTUALES.',
     items: [
       { title: 'Entrada', time: '6:45 p.m.' },
-      { title: 'Brindis', time: '7:00' },
-      { title: 'Vals', time: '7:15' },
+      { title: 'Vals', time: '7:00' },
+      { title: 'Brindis', time: '7:15' },
       { title: 'Cena', time: '7:30' },
       { title: 'Baile', time: '8:00' },
-      { title: 'Pastel', time: '10:00' },
-      { title: 'Baile', time: '10:30-12:00' },
+      { title: 'Pastel', time: '10:15' },
+      { title: 'Baile', time: '10:15 - 12:00' },
     ],
   },
   dressAndAttendance: {

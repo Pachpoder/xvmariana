@@ -76,6 +76,7 @@ export async function createInvitation(
         ? 'Ese slug ya está en uso. Elige otro.'
         : 'No fue posible crear la invitación.',
     };
+  revalidatePath('/admin');
   revalidatePath('/admin/invitaciones');
   redirect('/admin/invitaciones?notice=created');
 }
@@ -110,12 +111,13 @@ export async function updateInvitation(
           ? 'Ese slug ya está en uso. Elige otro.'
           : 'No fue posible actualizar la invitación.',
     };
+  revalidatePath('/admin');
   revalidatePath('/admin/invitaciones');
   revalidatePath(`/admin/invitaciones/${parsed.data.id}/editar`);
   redirect('/admin/invitaciones?notice=updated');
 }
 
-export async function archiveInvitation(formData: FormData) {
+export async function removeInvitationFromList(formData: FormData) {
   const id = z.string().uuid().safeParse(formData.get('id'));
   if (!id.success) return;
   const { supabase } = await requireAdmin();
@@ -124,19 +126,7 @@ export async function archiveInvitation(formData: FormData) {
     .update({ archived_at: new Date().toISOString(), is_active: false })
     .eq('id', id.data);
   if (error) return;
+  revalidatePath('/admin');
   revalidatePath('/admin/invitaciones');
-  redirect('/admin/invitaciones?notice=archived');
-}
-
-export async function restoreInvitation(formData: FormData) {
-  const id = z.string().uuid().safeParse(formData.get('id'));
-  if (!id.success) return;
-  const { supabase } = await requireAdmin();
-  const { error } = await supabase
-    .from('invitations')
-    .update({ archived_at: null, is_active: true })
-    .eq('id', id.data);
-  if (error) return;
-  revalidatePath('/admin/invitaciones');
-  redirect('/admin/invitaciones?notice=restored');
+  redirect('/admin/invitaciones?notice=removed');
 }

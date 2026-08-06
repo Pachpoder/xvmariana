@@ -39,10 +39,16 @@ export function PublicInvitationExperience({
     : { duration: 1.8, ease: [0.22, 1, 0.36, 1] };
   const invitationImagePath =
     invitation.invitationImagePath === '/assets/invitacion-placeholder.svg'
-      ? '/assets/landing/invitacion.jpeg'
+      ? '/assets/landing/invitacion.png'
       : invitation.invitationImagePath;
   return (
-    <main className={stage === 'invitation' ? 'min-h-svh' : 'min-h-svh overflow-hidden bg-[#f7f5ec] px-4 py-6 text-[#495343] sm:px-8'}>
+    <main
+      className={
+        stage === 'invitation'
+          ? 'min-h-svh'
+          : 'min-h-svh overflow-hidden bg-[#f7f5ec] px-4 py-6 text-[#495343] sm:px-8'
+      }
+    >
       <AnimatePresence mode='wait'>
         {stage === 'loading' && (
           <motion.section
@@ -136,7 +142,11 @@ export function PublicInvitationExperience({
                   transition={openingTransition}
                   style={{ transformStyle: 'preserve-3d' }}
                 >
-                  <LandingImage src='/assets/landing/pestanaSobre.png' alt='' className='h-full w-full object-contain' />
+                  <LandingImage
+                    src='/assets/landing/pestanaSobre.png'
+                    alt=''
+                    className='h-full w-full object-contain'
+                  />
                   <LandingImage
                     src='/assets/landing/sello.png'
                     alt='Sello del sobre'
@@ -144,18 +154,17 @@ export function PublicInvitationExperience({
                   />
                 </motion.div>
               </button>
-              <p id='envelope-help' className='mt-7 text-center font-[family-name:var(--font-lora)] text-sm font-semibold tracking-[0.08em] text-[#8c713c]'>
+              <p
+                id='envelope-help'
+                className='mt-7 text-center font-[family-name:var(--font-lora)] text-sm font-semibold tracking-[0.08em] text-[#8c713c]'
+              >
                 Toca el sobre para abrir tu invitación
               </p>
             </div>
           </motion.section>
         )}
         {stage === 'invitation' && (
-          <PersonalizedLanding
-            invitation={invitation}
-            slug={slug}
-            transition={transition}
-          />
+          <PersonalizedLanding invitation={invitation} slug={slug} transition={transition} />
         )}
       </AnimatePresence>
     </main>
@@ -187,7 +196,13 @@ function PersonalizedLanding({
   );
 }
 
-function PersonalizedInvitationDetails({ invitation, slug }: { invitation: PublicInvitationDto; slug: string }) {
+function PersonalizedInvitationDetails({
+  invitation,
+  slug,
+}: {
+  invitation: PublicInvitationDto;
+  slug: string;
+}) {
   const maximumGuests = invitation.guestNames.length + invitation.maxExtraGuests;
   return (
     <section className='border-y border-[#e2d4c0] bg-[#fffdf8] px-6 py-9 text-center text-[#8c713c] sm:px-10'>

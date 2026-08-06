@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { ArchiveRestore, Clipboard, Pencil, Search, Trash2 } from 'lucide-react';
+import { Clipboard, Pencil, Search, TicketCheck, Trash2, UsersRound } from 'lucide-react';
 import { toast } from 'sonner';
-import { archiveInvitation, restoreInvitation } from '@/actions/invitations';
+import { removeInvitationFromList } from '@/actions/invitations';
+import { adminAudienceCopy } from '@/lib/admin-audience-copy';
 import type { InvitationSummary, RsvpStatus } from '@/lib/queries/invitations';
 
 type InvitationListProps = {
@@ -13,6 +14,9 @@ type InvitationListProps = {
   status: string;
   page: number;
   totalPages: number;
+  totalInvitations: number;
+  confirmedAttendeesTotal: number;
+  startIndex: number;
   notice?: string;
 };
 const labels: Record<RsvpStatus, string> = {
@@ -41,6 +45,9 @@ export function InvitationList({
   status,
   page,
   totalPages,
+  totalInvitations,
+  confirmedAttendeesTotal,
+  startIndex,
   notice,
 }: InvitationListProps) {
   useEffect(() => {
@@ -49,8 +56,7 @@ export function InvitationList({
         {
           created: 'Invitación creada.',
           updated: 'Invitación actualizada.',
-          archived: 'Invitación archivada.',
-          restored: 'Invitación restaurada.',
+          removed: 'Invitación eliminada del listado.',
         }[notice] ?? 'Cambios guardados.'
       );
   }, [notice]);
@@ -62,6 +68,26 @@ export function InvitationList({
     `/admin/invitaciones?${new URLSearchParams({ ...(query ? { q: query } : {}), ...(status ? { status } : {}), page: String(nextPage) })}`;
   return (
     <>
+      <div className='mb-4 grid gap-3 sm:grid-cols-2'>
+        <div className='flex items-center gap-3 rounded-2xl border border-rose/20 bg-white p-4'>
+          <span className='rounded-xl bg-gold/10 p-2 text-gold'>
+            <TicketCheck size={18} />
+          </span>
+          <div>
+            <p className='text-xs text-stone-500'>Invitaciones familiares</p>
+            <p className='text-xl font-semibold text-wine'>{totalInvitations}</p>
+          </div>
+        </div>
+        <div className='flex items-center gap-3 rounded-2xl border border-rose/20 bg-white p-4'>
+          <span className='rounded-xl bg-emerald-50 p-2 text-emerald-700'>
+            <UsersRound size={18} />
+          </span>
+          <div>
+            <p className='text-xs text-stone-500'>Familiares confirmados</p>
+            <p className='text-xl font-semibold text-wine'>{confirmedAttendeesTotal}</p>
+          </div>
+        </div>
+      </div>
       <form
         className='mb-6 grid gap-3 rounded-2xl border border-rose/20 bg-white p-4 sm:grid-cols-[1fr_180px_auto]'
         method='get'
@@ -95,31 +121,38 @@ export function InvitationList({
         </div>
       ) : (
         <>
-          <div className='hidden overflow-hidden rounded-2xl border border-rose/20 bg-white md:block'>
-            <table className='w-full text-left text-sm'>
+          <div className='hidden overflow-x-auto rounded-2xl border border-rose/20 bg-white md:block'>
+            <table className='w-full min-w-[940px] text-left text-sm'>
               <thead className='bg-rose/10 text-stone-600'>
                 <tr>
+                  <th className='w-14 px-4 py-4 text-center'>#</th>
                   <th className='px-5 py-4'>Persona o familia</th>
                   <th className='px-4 py-4'>Estado</th>
                   <th className='px-4 py-4'>Pase</th>
+                  <th className='px-4 py-4'>Confirmaron</th>
                   <th className='px-4 py-4'>Enlace</th>
                   <th className='px-5 py-4 text-right'>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {invitations.map((invitation) => (
+                {invitations.map((invitation, index) => (
                   <tr key={invitation.id} className='border-t border-stone-100'>
+                    <td className='px-4 py-4 text-center font-semibold text-stone-400'>
+                      {startIndex + index + 1}
+                    </td>
                     <td className='px-5 py-4'>
                       <p className='font-semibold'>{invitation.label}</p>
                       <p className='mt-1 text-xs text-stone-500'>
-                        Invitación personalizada
-                        {invitation.archived_at ? ' · Archivada' : ''}
+                        {adminAudienceCopy.personalized.rowLabel}
                       </p>
                     </td>
                     <td className='px-4 py-4'>
                       <StatusBadge status={invitation.status} />
                     </td>
                     <td className='px-4 py-4 font-medium text-stone-700'>{passLabel(invitation)}</td>
+                    <td className='px-4 py-4'>
+                      <ConfirmedCount invitation={invitation} />
+                    </td>
                     <td className='px-4 py-4'>
                       <button
                         onClick={() => void copyLink(invitation.public_slug)}
@@ -138,16 +171,22 @@ export function InvitationList({
             </table>
           </div>
           <div className='space-y-3 md:hidden'>
-            {invitations.map((invitation) => (
+            {invitations.map((invitation, index) => (
               <article
                 key={invitation.id}
                 className='rounded-2xl border border-rose/20 bg-white p-5'
               >
                 <div className='flex items-start justify-between gap-3'>
                   <div>
+                    <p className='mb-1 text-xs font-semibold text-gold'>
+                      Invitación #{startIndex + index + 1}
+                    </p>
                     <h2 className='font-semibold'>{invitation.label}</h2>
                     <p className='mt-1 text-xs text-stone-500'>
                       Pase para {passLabel(invitation)}
+                    </p>
+                    <p className='mt-2 text-sm font-medium text-stone-700'>
+                      Confirmaron: {invitation.confirmedAttendees}
                     </p>
                   </div>
                   <StatusBadge status={invitation.status} />
@@ -192,6 +231,16 @@ function StatusBadge({ status }: { status: RsvpStatus }) {
     </span>
   );
 }
+
+function ConfirmedCount({ invitation }: { invitation: InvitationSummary }) {
+  return (
+    <span className='inline-flex items-center gap-1.5 font-semibold text-stone-700'>
+      <UsersRound size={15} className='text-gold' />
+      {invitation.confirmedAttendees}
+    </span>
+  );
+}
+
 function Actions({
   invitation,
   mobile = false,
@@ -219,27 +268,22 @@ function Actions({
       >
         <Clipboard size={17} />
       </button>
-      {invitation.archived_at ? (
-        <form action={restoreInvitation}>
-          <input type='hidden' name='id' value={invitation.id} />
-          <button aria-label='Restaurar invitación' className='text-wine'>
-            <ArchiveRestore size={17} />
-          </button>
-        </form>
-      ) : (
-        <form
-          action={archiveInvitation}
-          onSubmit={(event) => {
-            if (!window.confirm('¿Archivar esta invitación? Las respuestas RSVP se conservarán.'))
-              event.preventDefault();
-          }}
-        >
-          <input type='hidden' name='id' value={invitation.id} />
-          <button aria-label='Archivar invitación' className='text-stone-500'>
-            <Trash2 size={17} />
-          </button>
-        </form>
-      )}
+      <form
+        action={removeInvitationFromList}
+        onSubmit={(event) => {
+          if (
+            !window.confirm(
+              '¿Eliminar esta invitación del listado? Dejará de estar disponible, pero sus datos y respuestas se conservarán.'
+            )
+          )
+            event.preventDefault();
+        }}
+      >
+        <input type='hidden' name='id' value={invitation.id} />
+        <button aria-label='Eliminar invitación del listado' className='text-stone-500 hover:text-wine'>
+          <Trash2 size={17} />
+        </button>
+      </form>
     </div>
   );
 }

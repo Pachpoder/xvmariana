@@ -6,7 +6,12 @@ type InvitationRow = Database["public"]["Tables"]["invitations"]["Row"];
 type GuestRow = Database["public"]["Tables"]["invitation_guests"]["Row"];
 type RsvpRow = Database["public"]["Tables"]["rsvps"]["Row"];
 export type RsvpStatus = "pending" | RsvpRow["response"];
-export type InvitationSummary = InvitationRow & { guests: GuestRow[]; rsvp: RsvpRow | null; status: RsvpStatus };
+export type InvitationSummary = InvitationRow & {
+  guests: GuestRow[];
+  rsvp: RsvpRow | null;
+  status: RsvpStatus;
+  confirmedAttendees: number;
+};
 
 export async function getFirstEvent() {
   const { supabase } = await requireAdmin();
@@ -35,7 +40,12 @@ export async function getInvitationById(id: string) {
 
 export async function getInvitationSummaries() {
   const { supabase } = await requireAdmin();
-  const { data: invitations, error } = await supabase.from("invitations").select("*").order("created_at", { ascending: false });
+  const { data: invitations, error } = await supabase
+    .from("invitations")
+    .select("*")
+    .is("archived_at", null)
+    .eq("is_active", true)
+    .order("created_at", { ascending: false });
   if (error) throw new Error("No fue posible cargar las invitaciones.");
   const ids = (invitations ?? []).map((invitation) => invitation.id);
   if (!ids.length) return [] as InvitationSummary[];
@@ -48,6 +58,10 @@ export async function getInvitationSummaries() {
     const invitationGuests = (guests ?? []).filter((guest) => guest.invitation_id === invitation.id);
     const rsvp = (rsvps ?? []).find((response) => response.invitation_id === invitation.id) ?? null;
     const status: RsvpStatus = rsvp?.response ?? "pending";
-    return { ...invitation, guests: invitationGuests, rsvp, status };
+    const confirmedAttendees =
+      rsvp?.response === "attending"
+        ? rsvp.named_guests_attending + rsvp.extra_guests_attending
+        : 0;
+    return { ...invitation, guests: invitationGuests, rsvp, status, confirmedAttendees };
   });
 }

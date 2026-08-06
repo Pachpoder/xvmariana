@@ -18,19 +18,27 @@ export function LandingRsvpSubmissionsList({ submissions }: { submissions: Submi
       </section>
     );
   return (
-    <section className='overflow-hidden rounded-2xl border border-rose/20 bg-white'>
+    <section className='overflow-hidden rounded-2xl border border-rose/20 bg-white shadow-sm'>
+      <div className='border-b border-stone-100 bg-[#fffdfb] px-5 py-4'>
+        <h2 className='font-serif text-xl text-wine'>Detalle de respuestas</h2>
+        <p className='mt-1 text-xs text-stone-500'>
+          Una fila representa a un amigo que respondió desde la landing pública.
+        </p>
+      </div>
       <div className='hidden overflow-x-auto sm:block'>
         <table className='w-full text-left text-sm'>
           <thead className='bg-[#fbf7f3] text-stone-600'>
             <tr>
+              <th className='w-14 px-4 py-4 text-center font-semibold'>#</th>
               <th className='px-5 py-4 font-semibold'>Nombre</th>
               <th className='px-5 py-4 font-semibold'>Respuesta</th>
               <th className='px-5 py-4 font-semibold'>Enviada</th>
             </tr>
           </thead>
           <tbody>
-            {submissions.map((submission) => (
+            {submissions.map((submission, index) => (
               <tr key={submission.id} className='border-t border-stone-100'>
+                <td className='px-4 py-4 text-center font-semibold text-stone-400'>{index + 1}</td>
                 <td className='px-5 py-4 font-medium'>
                   {submission.first_name} {submission.last_name}
                 </td>
@@ -46,11 +54,16 @@ export function LandingRsvpSubmissionsList({ submissions }: { submissions: Submi
         </table>
       </div>
       <div className='space-y-3 p-4 sm:hidden'>
-        {submissions.map((submission) => (
+        {submissions.map((submission, index) => (
           <article key={submission.id} className='rounded-xl border border-stone-100 p-4'>
-            <p className='font-medium'>
-              {submission.first_name} {submission.last_name}
-            </p>
+            <div className='flex items-start gap-3'>
+              <span className='grid size-7 shrink-0 place-items-center rounded-full bg-rose/10 text-xs font-semibold text-wine'>
+                {index + 1}
+              </span>
+              <p className='font-medium'>
+                {submission.first_name} {submission.last_name}
+              </p>
+            </div>
             <div className='mt-2 flex items-center justify-between gap-3'>
               <ResponseBadge response={submission.response} />
               <time className='text-xs text-stone-500' dateTime={submission.created_at}>

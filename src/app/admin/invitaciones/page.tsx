@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { Toaster } from 'sonner';
 import { InvitationList } from '@/components/admin/invitation-list';
+import { RefreshButton } from '@/components/admin/refresh-button';
+import { adminAudienceCopy } from '@/lib/admin-audience-copy';
 import { getInvitationSummaries, type RsvpStatus } from '@/lib/queries/invitations';
 
 const pageSize = 10;
@@ -19,6 +21,7 @@ export default async function InvitationsPage({
   const filtered = invitations.filter(
     (invitation) =>
       (!query ||
+        invitation.label.toLocaleLowerCase('es-GT').includes(query) ||
         invitation.guests.some((guest) =>
           guest.full_name.toLocaleLowerCase('es-GT').includes(query)
         )) &&
@@ -31,15 +34,23 @@ export default async function InvitationsPage({
     <>
       <div className='flex flex-wrap items-end justify-between gap-4'>
         <div>
-          <p className='text-sm font-medium text-gold'>GESTIÓN</p>
-          <h1 className='mt-2 font-serif text-4xl text-wine'>Invitaciones</h1>
+          <p className='text-sm font-medium text-gold'>{adminAudienceCopy.personalized.eyebrow}</p>
+          <h1 className='mt-2 font-serif text-4xl text-wine'>
+            {adminAudienceCopy.personalized.heading}
+          </h1>
+          <p className='mt-3 text-sm text-stone-500'>
+            {adminAudienceCopy.personalized.description}
+          </p>
         </div>
-        <Link
-          href='/admin/invitaciones/nueva'
-          className='rounded-full bg-wine px-5 py-3 text-sm font-semibold text-white'
-        >
-          Nueva invitación
-        </Link>
+        <div className='flex flex-wrap gap-3'>
+          <RefreshButton />
+          <Link
+            href='/admin/invitaciones/nueva'
+            className='inline-flex min-h-11 items-center rounded-full bg-wine px-5 py-3 text-sm font-semibold text-white'
+          >
+            Nueva invitación
+          </Link>
+        </div>
       </div>
       <div className='mt-8'>
         <InvitationList
@@ -48,6 +59,12 @@ export default async function InvitationsPage({
           status={validStatus}
           page={page}
           totalPages={totalPages}
+          totalInvitations={invitations.length}
+          confirmedAttendeesTotal={invitations.reduce(
+            (total, invitation) => total + invitation.confirmedAttendees,
+            0
+          )}
+          startIndex={(page - 1) * pageSize}
           notice={params.notice}
         />
       </div>

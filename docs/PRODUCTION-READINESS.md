@@ -15,7 +15,7 @@ La revisión visual comprueba la pantalla de login, ausencia de overflow horizon
 
 ## E2E
 
-`e2e/invitations.spec.ts` cubre login, acceso no autorizado, creación, edición, archivo, apertura del enlace, RSVP positivo/negativo, actualización por upsert, límite de extras, enlace inválido e invitación inactiva. Para ejecutarla de verdad se requieren `E2E_TESTS=true`, `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD` y `E2E_TEST_SLUG` contra un proyecto Supabase de prueba, con evento publicado. No debe apuntarse a producción porque crea, modifica, responde y archiva una invitación.
+`e2e/invitations.spec.ts` cubre login, acceso no autorizado, creación, edición, eliminación visual con conservación de datos, apertura del enlace, RSVP positivo/negativo, actualización por upsert, límite de extras, enlace inválido e invitación inactiva. Para ejecutarla de verdad se requieren `E2E_TESTS=true`, `E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD` y `E2E_TEST_SLUG` contra un proyecto Supabase de prueba, con evento publicado. No debe apuntarse a producción porque crea, modifica, responde y desactiva una invitación.
 
 ## Accesibilidad y estabilidad
 

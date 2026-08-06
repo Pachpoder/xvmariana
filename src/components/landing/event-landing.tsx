@@ -111,7 +111,7 @@ function LandingCelebrantPhoto() {
       <motion.p
         variants={sectionReveal}
         transition={revealTransition}
-        className='pointer-events-none absolute inset-x-[11%] top-[63%] z-30 text-center font-[family-name:var(--font-lora)] text-[clamp(1rem,4.3vw,1.2rem)] leading-[1.28] text-[#8c713c]'
+        className='pointer-events-none absolute inset-x-[11%] top-[63%] z-30 whitespace-pre-line text-center font-[family-name:var(--font-lora)] text-[clamp(1rem,4.3vw,1.2rem)] leading-[1.28] text-[#8c713c]'
       >
         {celebrant.description}
       </motion.p>
@@ -134,9 +134,9 @@ function LandingEventDetails() {
         viewport={{ once: true, amount: 0.6 }}
         variants={sectionReveal}
         transition={revealTransition}
-        className='pointer-events-none absolute inset-x-[9%] top-[9%] z-20'
+        className='pointer-events-none absolute inset-x-[9%] top-[4.5%] z-20'
       >
-        <p className='font-[family-name:var(--font-lora)] text-[clamp(0.95rem,4.2vw,1.45rem)] font-semibold leading-[1.36] tracking-[0.16em] text-[#8c713c]'>
+        <p className='font-[family-name:var(--font-lora)] text-[clamp(0.8rem,3.8vw,1.25rem)] font-semibold leading-[1.32] tracking-[0.14em] text-[#8c713c]'>
           {eventDetails.invitation.map((line) => (
             <span key={line} className='block'>
               {line}
@@ -150,15 +150,15 @@ function LandingEventDetails() {
         viewport={{ once: true, amount: 0.55 }}
         variants={sectionReveal}
         transition={{ ...revealTransition, delay: 0.08 }}
-        className='pointer-events-none absolute inset-x-[10%] top-[23%] z-20 grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-[#c65382]'
+        className='pointer-events-none absolute inset-x-[8%] top-[12.5%] z-20 grid grid-cols-[1fr_auto_1fr] items-center gap-2 text-[#c65382]'
       >
-        <p className='font-[family-name:var(--font-luxurious-script)] text-[clamp(1.65rem,7vw,2.5rem)] leading-[1.05]'>
+        <p className='font-[family-name:var(--font-luxurious-script)] text-[clamp(1.4rem,6.3vw,2.25rem)] leading-[1.05]'>
           {eventDetails.parents.first}
         </p>
-        <span className='font-[family-name:var(--font-lora)] text-[clamp(1.35rem,5vw,2rem)] text-[#8c713c]'>
+        <span className='font-[family-name:var(--font-lora)] text-[clamp(1.15rem,4.5vw,1.75rem)] text-[#8c713c]'>
           &amp;
         </span>
-        <p className='font-[family-name:var(--font-luxurious-script)] text-[clamp(1.65rem,7vw,2.5rem)] leading-[1.05]'>
+        <p className='font-[family-name:var(--font-luxurious-script)] text-[clamp(1.4rem,6.3vw,2.25rem)] leading-[1.05]'>
           {eventDetails.parents.second}
         </p>
       </motion.div>
@@ -167,7 +167,7 @@ function LandingEventDetails() {
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true, amount: 0.5 }}
         transition={{ ...revealTransition, delay: 0.14 }}
-        className='pointer-events-none absolute left-[14%] top-[35%] z-20 w-[72%]'
+        className='pointer-events-none absolute left-[20%] top-[19%] z-20 w-[60%]'
       >
         <LandingImage src='/assets/landing/fecha21agosto.png' alt='Viernes 21 de agosto de 2026' className='w-full' />
       </motion.div>
@@ -175,14 +175,16 @@ function LandingEventDetails() {
         iconPath='/assets/landing/iconoRecepcion.png'
         iconAlt='Iglesia'
         location={eventDetails.ceremony}
-        className='top-[53%]'
+        className='top-[29%]'
       />
       <EventLocationCard
         iconPath='/assets/landing/iconoUbicacion.png'
         iconAlt='Ubicación de la recepción'
         location={eventDetails.reception}
-        className='top-[76%]'
+        className='top-[46%]'
       />
+      <EventParkingCard parking={eventDetails.parking} />
+      <EventGiftCard gift={eventDetails.gift} />
     </section>
   );
 }
@@ -190,7 +192,7 @@ function LandingEventDetails() {
 function LandingItinerary() {
   const { itinerary } = landingContent;
   return (
-    <section className='relative -mt-[39px] bg-[#526445] sm:-mt-[47px]'>
+    <section className='relative -mt-[64px] bg-[#526445] sm:-mt-[84px]'>
       <LandingImage
         src='/assets/landing/background/background3.png'
         alt='Bosque que acompaña el itinerario de actividades'
@@ -335,24 +337,87 @@ function EventLocationCard({
       transition={revealTransition}
       className={`absolute inset-x-[8%] z-20 text-center ${className}`}
     >
-      <LandingImage src={iconPath} alt={iconAlt} className='pointer-events-none mx-auto w-[11%]' />
-      <h2 className='mt-1.5 font-[family-name:var(--font-lora)] text-sm font-semibold tracking-[0.16em] text-[#8c713c] sm:text-base'>
+      <LandingImage
+        src={iconPath}
+        alt={iconAlt}
+        className='pointer-events-none mx-auto w-[9%] sm:w-[11%]'
+      />
+      <h2 className='mt-1 font-[family-name:var(--font-lora)] text-xs font-semibold tracking-[0.16em] text-[#8c713c] sm:mt-1.5 sm:text-base'>
         {location.label}
       </h2>
-      <p className='mt-1.5 font-[family-name:var(--font-lora)] text-[10px] font-semibold tracking-[0.1em] text-[#8c713c] sm:text-sm'>
+      <p className='mt-1 font-[family-name:var(--font-lora)] text-[9px] font-semibold tracking-[0.1em] text-[#8c713c] sm:mt-1.5 sm:text-sm'>
         {location.venue}
       </p>
-      <p className='mt-1 font-[family-name:var(--font-luxurious-script)] text-xl leading-none text-[#d96f9d] sm:text-2xl'>
+      <p className='mt-1 font-[family-name:var(--font-luxurious-script)] text-lg leading-none text-[#d96f9d] sm:text-2xl'>
         {location.time}
       </p>
       <a
         href={location.mapsUrl}
         target='_blank'
         rel='noreferrer'
-        className='pointer-events-auto mt-2 inline-flex items-center rounded-lg bg-[#947134] px-3 py-1.5 font-[family-name:var(--font-lora)] text-[10px] font-semibold tracking-[0.12em] text-[#fffaf0] shadow-sm transition-colors hover:bg-[#795a29] sm:px-4 sm:text-xs'
+        className='pointer-events-auto mt-1.5 inline-flex items-center rounded-lg bg-[#947134] px-3 py-1 font-[family-name:var(--font-lora)] text-[9px] font-semibold tracking-[0.12em] text-[#fffaf0] shadow-sm transition-colors hover:bg-[#795a29] sm:mt-2 sm:px-4 sm:py-1.5 sm:text-xs'
       >
         VER UBICACIÓN
       </a>
+    </motion.section>
+  );
+}
+
+function EventParkingCard({
+  parking,
+}: {
+  parking: { label: string; price: string; description: string };
+}) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.5 }}
+      transition={revealTransition}
+      className='pointer-events-none absolute inset-x-[9%] top-[62.5%] z-20 text-center'
+    >
+      <LandingImage
+        src='/assets/landing/iconoParqueo.png'
+        alt='Parqueo público'
+        className='mx-auto w-[10%]'
+      />
+      <h2 className='mt-1 font-[family-name:var(--font-lora)] text-xs font-semibold tracking-[0.15em] text-[#8c713c] sm:text-base'>
+        {parking.label}
+      </h2>
+      <p className='mt-1 font-[family-name:var(--font-lora)] text-[10px] font-semibold tracking-[0.13em] text-[#8c713c] sm:text-sm'>
+        {parking.price}
+      </p>
+      <p className='mx-auto mt-2 max-w-[25rem] font-[family-name:var(--font-lora)] text-[9px] font-semibold leading-[1.4] tracking-[0.1em] text-[#8c713c] sm:text-xs'>
+        {parking.description}
+      </p>
+    </motion.section>
+  );
+}
+
+function EventGiftCard({
+  gift,
+}: {
+  gift: { heading: string; message: string };
+}) {
+  return (
+    <motion.section
+      initial={{ opacity: 0, y: 18 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.5 }}
+      transition={revealTransition}
+      className='pointer-events-none absolute inset-x-[9%] top-[79%] z-20 text-center'
+    >
+      <LandingImage
+        src='/assets/landing/iconoRegalo.png'
+        alt='Detalle de regalo'
+        className='mx-auto w-[10%]'
+      />
+      <h2 className='mx-auto mt-1.5 max-w-[25rem] font-[family-name:var(--font-lora)] text-[10px] font-semibold leading-[1.4] tracking-[0.13em] text-[#8c713c] sm:text-sm'>
+        {gift.heading}
+      </h2>
+      <p className='mx-auto mt-2.5 max-w-[27rem] font-[family-name:var(--font-lora)] text-[10px] leading-[1.4] text-[#8c713c] sm:mt-4 sm:text-base'>
+        {gift.message}
+      </p>
     </motion.section>
   );
 }

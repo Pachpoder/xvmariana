@@ -25,6 +25,12 @@ Todos los milestones planificados están completados. Las siguientes tareas debe
 
 ## Mantenimiento — configuración administrativa y landing fija
 
+- Renovado el panel administrativo para reflejar la lógica vigente: separa los pases personalizados de las respuestas individuales de la landing, muestra personas con pase, confirmadas por cada canal, confirmadas totales, estados y progreso de confirmación; las tres vistas de datos incorporan actualización manual mediante `router.refresh()` sin añadir dependencias.
+- El listado de invitaciones activas incorpora numeración recalculada, columna de personas que confirmaron, resúmenes compatibles con filtros y eliminación visual. Esta última conserva invitación y RSVP en base mediante desactivación interna, pero los excluye del listado y de los conteos activos.
+- Mejorada la administración de respuestas de la landing con métricas propias, última respuesta, numeración, estados claros y explicaciones para distinguirlas de las invitaciones personalizadas.
+- Centralizados los nombres de audiencia del panel para explicar en lenguaje familiar que los pases personalizados corresponden a familiares y la landing pública actualmente corresponde a amigos; la copia puede cambiarse desde un solo archivo si después cambia ese público.
+- Ampliada la segunda sección editorial con información de parqueo público y obsequio en efectivo, usando los iconos provistos y una distribución vertical responsive que conserva introducción, padres, fecha, misa y recepción.
+- Ajustado el texto descriptivo principal de la landing para conservar cuatro líneas editoriales, con «de Mariana» y «de un hermoso camino» al inicio de su línea.
 - Simplificada la pantalla `/admin/configuracion`: conserva solamente los datos operativos del evento y las invitaciones personales.
 - La landing de `/` ya no consulta ni modifica contenido editorial desde Supabase o el administrador. Sus textos, imágenes, lugares, agenda y secciones se editan directamente en `src/lib/landing-content.ts`.
 - Las respuestas enviadas desde el formulario de la landing continúan guardándose en `landing_rsvp_submissions` y se consultan desde el panel administrativo.
@@ -33,8 +39,10 @@ Todos los milestones planificados están completados. Las siguientes tareas debe
 - El RSVP personalizado comunica de forma inmediata el guardado de una actualización mediante un estado de carga visible, bloquea reenvíos mientras procesa y muestra una confirmación o error con el estilo de la landing.
 - Añadida una segunda sección editorial en la landing de desarrollo: usa `background2.png`, fecha e iconos provistos para presentar padres, misa y recepción, con enlaces de Maps editables desde `src/lib/landing-content.ts`.
 - Añadida una tercera sección editorial en la landing de desarrollo: un itinerario alternado sobre `background3.png`, con eje `linea.png`, arreglo `rosa.png` y actividades editables desde el mismo archivo de contenido.
+- Actualizado el itinerario definitivo: entrada 6:45 p. m., vals 7:00, brindis 7:15, cena 7:30, baile 8:00, pastel 10:15 y baile de 10:15 a 12:00.
+- Elevada la tercera sección completa detrás del borde rasgado de la sección de detalles; la tarjeta conserva su posición interna y el bosque cubre las transparencias del papel sin dejar franjas blancas.
 - La rosa decorativa del itinerario conserva su posición, no queda recortada en el límite de su sección y se superpone al borde de la cuarta sección mediante una capa superior independiente.
-- El itinerario se solapa de forma responsive por detrás del borde de papel rasgado de la sección anterior (39 px en móvil y 47 px desde `sm`), preservando el orden visual y evitando separaciones entre ambos fondos.
+- El itinerario se solapa de forma responsive por detrás del borde de papel rasgado de la sección anterior (64 px en móvil y 84 px desde `sm`), preservando el orden visual y evitando separaciones entre ambos fondos.
 - La sección de detalles no añade un color de fondo propio en el borde rasgado: las zonas transparentes de `background2.png` revelan el bosque de `background3.png` colocado por detrás.
 - Añadida una cuarta sección editorial en la landing de desarrollo: código de vestimenta y confirmación pública dentro de `background4.png`, usando el mismo formulario RSVP existente y la paleta rosa, dorada y crema. Se solapa por encima del final de `background3.png` para que su borde de papel rasgado quede al frente; incorpora `dress.png` sobre el título de vestimenta y centra ese conjunto visualmente. El RSVP personalizado ajusta su posición y espaciado en móvil para que sus conteos, mensaje y botón no se recorten.
 - Las invitaciones personalizadas conservan su loading y sobre animado; tras abrirse muestran la misma landing pública con un bloque seguro de nombres/cupo y el RSVP propio de la invitación, sin exponer notas internas.
