@@ -43,7 +43,7 @@ export const landingContent = {
       label: 'PARQUEO PÚBLICO',
       price: 'VALOR Q30.00',
       description:
-        'DISPONIBLE A POCOS METROS. CUPOS LIMITADOS, POR LO QUE RECOMENDAMOS HACER CARPOOL.',
+        'DISPONIBLE A POCOS METROS. CUPOS LIMITADOS, POR LO QUE RECOMENDAMOS COMPARTIR CARRO.',
     },
     gift: {
       heading: '¡GRACIAS POR ACOMPAÑARNOS EN ESTE DÍA TAN ESPECIAL!',
